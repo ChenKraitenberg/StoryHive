@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<resources>-->
+<!--    <color name="white">#FFFF</color>-->
+<!--    <color name="neutral_1">#FFB58A</color>-->
+<!--    <color name="neutral_2">#D3DDEA</color>-->
+<!--    <color name="neutral_3">#F2F7F9</color>-->
+<!--    <color name="neutral_4">#CDECEF</color>-->
+<!--    <color name="neutral_5">#2B91AD</color>-->
+<!--    <color name="black">#000000</color>-->
+<!--</resources>-->
+
+<resources>
+    <!-- Primary Colors -->
+    <color name="primaryColor">#0056D2</color> <!-- כחול כהה -->
+    <color name="primaryDarkColor">#003C91</color> <!-- כחול כהה יותר -->
+    <color name="primaryLightColor">#E3F2FD</color> <!-- כחול בהיר -->
+
+    <!-- Secondary Colors -->
+    <color name="secondaryColor">#FFCC80</color> <!-- כתום בהיר -->
+    <color name="neutralColor">#FAFAFA</color> <!-- צבע רקע בהיר -->
+    <color name="accentColor">#FFA726</color> <!-- כתום כהה -->
+
+    <!-- Text Colors -->
+    <color name="textPrimary">#212121</color> <!-- שחור טקסט -->
+    <color name="textSecondary">#757575</color> <!-- אפור טקסט -->
+    <color name="textOnPrimary">#FFFFFF</color> <!-- טקסט לבן על רקע צבעוני -->
+
+    <!-- Background Colors -->
+    <color name="backgroundColor">#FFFFFF</color> <!-- לבן -->
+    <color name="cardBackground">#F5F5F5</color> <!-- רקע קלף -->
+    <color name="colorBackground">#F5F5F5</color> <!-- רקע קלף -->
+
+
+    <!-- Buttons and Icons -->
+    <color name="buttonColor">#1976D2</color> <!-- כחול כפתור -->
+    <color name="iconColor">#FFFFFF</color> <!-- אייקונים לבנים -->
+
+    <!-- Special States -->
+    <color name="errorColor">#D32F2F</color> <!-- אדום שגיאה -->
+</resources>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <!-- שורה עליונה: תמונת פרופיל, שם משתמש, שם הספר -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp">
+
+            <!-- תמונת פרופיל -->
+            <ImageView
+                android:id="@+id/userProfileImage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_user_placeholder"
+                android:contentDescription="@string/user_profile"
+                android:scaleType="centerCrop" />
+
+            <!-- פרטי משתמש -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!-- שם משתמש -->
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Name"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/textPrimary" />
+
+                <!-- שם הספר -->
+                <TextView
+                    android:id="@+id/bookTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Book Title"
+                    android:textStyle="italic"
+                    android:textSize="14sp"
+                    android:textColor="@color/textPrimary" />
+
+                <!--- תוכן הספר -->
+                <TextView
+                    android:id="@+id/bookContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Book content goes here..."
+                    android:textSize="14sp"
+                    android:textColor="@color/textPrimary"
+                    android:paddingBottom="8dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- תוכן הפוסט -->
+        <TextView
+            android:id="@+id/postContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Post content or description goes here..."
+            android:textSize="14sp"
+            android:textColor="@color/textPrimary"
+            android:paddingBottom="8dp" />
+
+        <!-- שורה תחתונה: כפתורי לייק, תגובות ושיתוף -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:paddingTop="8dp">
+
+            <!-- כפתור לייק -->
+            <ImageView
+                android:id="@+id/likeButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_like"
+                android:contentDescription="@string/like" />
+
+            <!-- כפתור תגובות -->
+            <ImageView
+                android:id="@+id/commentButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_comment"
+                android:contentDescription="@string/comment" />
+
+            <!-- כפתור שיתוף -->
+            <ImageView
+                android:id="@+id/shareButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_share"
+                android:contentDescription="@string/share" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
