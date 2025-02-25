@@ -1,5 +1,7 @@
 package com.example.storyhive.ui.addPost
 
+import StorageRepository
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -9,9 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.storyhive.data.models.Post
 import com.example.storyhive.repository.FirebaseRepository
 import com.example.storyhive.repository.PostRepository
-import com.example.storyhive.repository.StorageRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 class CreatePostViewModel : ViewModel() {
@@ -28,74 +28,22 @@ class CreatePostViewModel : ViewModel() {
         selectedImageUri = uri
     }
 
-//    fun createPost(title: String, description: String, review: String, rating: Float) {
-//        val currentUser = FirebaseAuth.getInstance().currentUser
-//        if (currentUser != null) {
-//            val userId = currentUser.uid
-//            val newPostId = FirebaseFirestore.getInstance().collection("posts").document().id
-//
-//            // שליפת שם המשתמש מה-Firestore
-//            FirebaseFirestore.getInstance().collection("users").document(userId)
-//                .get()
-//                .addOnSuccessListener { document ->
-//                    val userName = document.getString("displayName") ?: "Unknown"
-//                    val userProfileImage = document.getString("profileImageUrl") ?: ""
-//
-//                    val post = Post(
-//                        postId = newPostId,
-//                        userId = userId,
-//                        userDisplayName = userName, // משתמשים בשם השמור בפיירסטור
-//                        userProfileImage = userProfileImage, // תמונת הפרופיל של המשתמש
-//                        bookTitle = title,
-//                        bookDescription = description,
-//                        likes = 0
-//                    )
-//
-//                    FirebaseFirestore.getInstance().collection("posts").document(newPostId)
-//                        .set(post)
-//                        .addOnSuccessListener {
-//                            Log.d("Firestore", "Post added successfully")
-//                        }
-//                        .addOnFailureListener { e ->
-//                            Log.e("Firestore", "Error adding post", e)
-//                        }
-//                }
-//                .addOnFailureListener { e ->
-//                    Log.e("Firestore", "Error retrieving user data", e)
-//                }
-//        } else {
-//            Log.e("Firestore", "User is not logged in")
-//        }
-//        FirebaseFirestore.getInstance().collection("posts")
-//            .get()
-//            .addOnSuccessListener { documents ->
-//                for (document in documents) {
-//                    val post = document.toObject(Post::class.java)
-//                    Log.d("Firestore", "Post: ${post.bookTitle}, Review: ${post.bookDescription}")
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.e("Firestore", "Error fetching posts", exception)
-//            }
-//
-//    }
-
-    fun createPost(title: String, author: String, review: String, rating: Float) {
+    fun createPost(context: Context, title: String, author: String, review: String, rating: Float) {
         _uiState.value = CreatePostUiState.Loading
 
         viewModelScope.launch {
             try {
                 Log.d("CreatePostViewModel", "Starting post creation: title=$title, author=$author")
 
-                // העלאת תמונה אם נבחרה
-                val imageUrl = selectedImageUri?.let { uri ->
+                // המרת תמונה ל-Base64 ושמירתה ב-Firestore
+                val imageBase64 = selectedImageUri?.let { uri ->
                     try {
-                        Log.d("CreatePostViewModel", "Uploading image...")
-                        val url = StorageRepository().uploadImage(uri, "book_images")
-                        Log.d("CreatePostViewModel", "Image uploaded: $url")
-                        url
+                        Log.d("CreatePostViewModel", "Encoding image to Base64...")
+                        val encodedImage = storageRepository.uploadImage(context, uri, "posts_images") // משתמשים ב-context
+                        Log.d("CreatePostViewModel", "Image encoded successfully!")
+                        encodedImage
                     } catch (e: Exception) {
-                        Log.e("CreatePostViewModel", "Failed to upload image", e)
+                        Log.e("CreatePostViewModel", "Failed to encode image", e)
                         null
                     }
                 }
@@ -115,7 +63,7 @@ class CreatePostViewModel : ViewModel() {
                     userProfileImage = currentUser.photoUrl?.toString() ?: "",
                     bookTitle = title,
                     bookAuthor = author,
-                    imageUrl = imageUrl,
+                    imageBase64 = imageBase64,  // שמירת התמונה כ-Base64
                     review = review,
                     rating = rating,
                     timestamp = System.currentTimeMillis()
@@ -139,6 +87,8 @@ class CreatePostViewModel : ViewModel() {
             }
         }
     }
+
+
     private fun validateInput(title: String, author: String, review: String): Boolean {
         return title.isNotBlank() && author.isNotBlank() && review.isNotBlank()
     }

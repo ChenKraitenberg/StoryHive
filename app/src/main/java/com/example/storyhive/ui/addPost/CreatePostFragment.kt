@@ -111,7 +111,7 @@ class CreatePostFragment : Fragment() {
             val rating = binding.ratingBar.rating
 
             if (validateInput(title, author, review)) {
-                viewModel.createPost(title, author, review, rating)
+                viewModel.createPost(requireContext(), title, author, review, rating)
             }
         }
     }

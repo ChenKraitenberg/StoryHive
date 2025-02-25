@@ -1,5 +1,6 @@
 package com.example.storyhive.ui.profile
 
+import StorageRepository
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +13,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.example.storyhive.R
 import com.example.storyhive.databinding.DialogEditProfileBinding
-import com.example.storyhive.repository.StorageRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
@@ -90,7 +90,7 @@ class EditProfileDialog : DialogFragment() {
                 // עדכון תמונת פרופיל אם נבחרה חדשה
                 val photoUrl = selectedImageUri?.let { uri ->
                     FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
-                        storageRepository.uploadImage(uri, userId)
+                        storageRepository.uploadImage(requireContext(), uri, "profile_images/$userId")
                     }
                 }
 

@@ -1,6 +1,7 @@
 // File: ProfileFragment.kt
 package com.example.storyhive.ui.profile
 
+import StorageRepository
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,7 +15,6 @@ import com.example.storyhive.data.models.UserPostsStats
 import com.example.storyhive.databinding.FragmentProfileBinding
 import com.example.storyhive.ui.home.PostsAdapter
 import com.example.storyhive.repository.PostRepository
-import com.example.storyhive.repository.StorageRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
@@ -136,7 +136,7 @@ private fun setupProfile() {
                     if (!profileImageBase64.isNullOrEmpty()) {
                         try {
                             // המר את ה-base64 לתמונה והצג אותה
-                            val bitmap = StorageRepository.decodeBase64ToBitmap(profileImageBase64)
+                            val bitmap = StorageRepository().decodeBase64ToBitmap(profileImageBase64)
                             binding.profileImage.setImageBitmap(bitmap)
                         } catch (e: Exception) {
                             Log.e("ProfileFragment", "Failed to decode profile image", e)

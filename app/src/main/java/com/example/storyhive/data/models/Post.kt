@@ -26,10 +26,12 @@ data class Post(
     val bookTitle: String = "",
     val bookAuthor: String = "",
     val bookDescription: String = "",
-    val imageUrl: String? = null,
-    val rating: Float = 0f,
+    var imageBase64: String? = null, // יכול להיות null
+    var rating: Float = 0.0f,
     val review: String = "",
     val likes: Int = 0,
     val likedBy: List<String> = emptyList(),
     val timestamp: Long = System.currentTimeMillis()
-)
+){
+
+}

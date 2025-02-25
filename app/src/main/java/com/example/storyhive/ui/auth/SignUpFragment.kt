@@ -1,6 +1,7 @@
 // SignUpFragment.kt
 package com.example.storyhive.ui.auth
 
+import StorageRepository
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -22,7 +23,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.storyhive.R
 import com.example.storyhive.databinding.FragmentSignUpBinding
-import com.example.storyhive.repository.StorageRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
@@ -156,7 +156,7 @@ class SignUpFragment : Fragment() {
 
                 Log.d("SignUpFragment", "Starting registration process")
 
-                // המרת תמונה לBase64 (אם יש)
+                // המרת תמונה ל-Base64
                 var imageBase64: String? = null
                 if (selectedImageUri != null) {
                     try {
@@ -170,10 +170,11 @@ class SignUpFragment : Fragment() {
                             ImageDecoder.decodeBitmap(source)
                         }
 
-                        // הקטן את התמונה לפני המרה לbase64
-                        val resizedBitmap = storageRepository.getResizedBitmap(bitmap, 500) // מקסימום 500px
+                        // הקטן את התמונה לפני המרה ל-Base64
+                        val resizedBitmap = storageRepository.getResizedBitmap(bitmap, 500)
                         imageBase64 = storageRepository.encodeImageToBase64(resizedBitmap)
-                        Log.d("SignUpFragment", "Image encoded to base64 successfully")
+
+                        Log.d("SignUpFragment", "Image encoded to Base64 successfully")
                     } catch (e: Exception) {
                         Log.e("SignUpFragment", "Failed to encode image", e)
                     }
@@ -186,7 +187,7 @@ class SignUpFragment : Fragment() {
                         Log.d("SignUpFragment", "User created: ${user?.uid}")
 
                         if (user != null) {
-                            // שמירת המשתמש בפיירסטור עם תמונה ב-base64
+                            // שמירת המשתמש בפיירסטור עם תמונה ב-Base64
                             val userMap = hashMapOf(
                                 "userId" to user.uid,
                                 "displayName" to name,
@@ -239,6 +240,7 @@ class SignUpFragment : Fragment() {
             }
         }
     }
+
 
     // עדכון שמירת המשתמש בפיירסטור עם שליטה על הצלחה/כישלון
     private fun saveUserToFirestore(userId: String, displayName: String, profileImageUrl: String?, callback: (Boolean) -> Unit) {
