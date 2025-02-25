@@ -1,118 +1,132 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="12dp"
     app:cardElevation="4dp">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="16dp">
 
-        <!-- שורה עליונה: תמונת פרופיל, שם משתמש, שם הספר -->
+        <!-- $סדר אלמנטים משופר -->
+
+        <!-- תמונת פרופיל ונתוני משתמש בשורה אחת -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingBottom="8dp">
+            android:gravity="center_vertical">
 
-            <!-- תמונת פרופיל -->
             <ImageView
-                android:id="@+id/userProfileImage"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_user_placeholder"
-                android:contentDescription="@string/user_profile"
-                android:scaleType="centerCrop" />
-
-            <!-- פרטי משתמש -->
-            <LinearLayout
-                android:layout_width="0dp"
+                android:id="@+id/profileImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_user_placeholder" />
+            <TextView
+                android:id="@+id/postAuthor"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <!-- שם משתמש -->
-                <TextView
-                    android:id="@+id/userName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="User Name"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/textPrimary" />
-
-                <!-- שם הספר -->
-                <TextView
-                    android:id="@+id/bookTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Book Title"
-                    android:textStyle="italic"
-                    android:textSize="14sp"
-                    android:textColor="@color/textPrimary" />
-
-                <!--- תוכן הספר -->
-                <TextView
-                    android:id="@+id/bookContent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Book content goes here..."
-                    android:textSize="14sp"
-                    android:textColor="@color/textPrimary"
-                    android:paddingBottom="8dp" />
-            </LinearLayout>
+                android:text="Post Author"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginStart="8dp" />
         </LinearLayout>
 
-        <!-- תוכן הפוסט -->
+        <!-- כותרת הפוסט - שם הספר -->
+        <TextView
+            android:id="@+id/postTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Post Title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="8dp" />
+
+        <!-- שם הסופר -->
+        <TextView
+            android:id="@+id/bookAuthor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Book Author"
+            android:textSize="16sp"
+            android:textColor="@color/text_secondary" />
+
+        <!-- תיאור הספר -->
         <TextView
             android:id="@+id/postContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Post content or description goes here..."
+            android:text="This is a sample post content."
             android:textSize="14sp"
-            android:textColor="@color/textPrimary"
-            android:paddingBottom="8dp" />
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="8dp" />
 
-        <!-- שורה תחתונה: כפתורי לייק, תגובות ושיתוף -->
+        <!-- ביקורת המשתמש - מחוץ לכפתורי האינטראקציה -->
+        <TextView
+            android:id="@+id/postReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Review goes here"
+            android:textSize="14sp"
+            android:textColor="@color/text_primary"
+            android:layout_marginTop="8dp"
+            android:visibility="visible"/>
+
+        <!-- אזור כפתורי אינטראקציה -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="end"
-            android:paddingTop="8dp">
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
 
+            <!-- שאר הכפתורים כמו קודם -->
             <!-- כפתור לייק -->
             <ImageView
                 android:id="@+id/likeButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_like"
-                android:contentDescription="@string/like" />
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_favorite_border"
+                android:contentDescription="Like Button"
+                android:padding="4dp"
+                app:tint="@color/text_secondary"/>
 
-            <!-- כפתור תגובות -->
+            <!-- מספר לייקים -->
+            <TextView
+                android:id="@+id/likeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginStart="4dp" />
+
+            <!-- כפתור תגובה -->
             <ImageView
                 android:id="@+id/commentButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:src="@drawable/ic_comment"
-                android:contentDescription="@string/comment" />
+                android:contentDescription="Comment Button"
+                android:padding="4dp"
+                android:layout_marginStart="16dp"
+                app:tint="@color/text_secondary" />
 
-            <!-- כפתור שיתוף -->
-            <ImageView
-                android:id="@+id/shareButton"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_share"
-                android:contentDescription="@string/share" />
+            <!-- מספר תגובות -->
+            <TextView
+                android:id="@+id/commentCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginStart="4dp" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -8,10 +8,7 @@
         android:id="@+id/searchFragment"
         android:icon="@drawable/search"
         android:title="Search" />
-    <item
-        android:id="@+id/addPostFragment"
-        android:icon="@drawable/ic_add"
-        android:title="Add" />
+
     <item
         android:id="@+id/notificationsFragment"
         android:icon="@drawable/notifications"
@@ -20,4 +17,9 @@
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_profile"
         android:title="Profile" />
+    <item
+        android:id="@+id/createPostFragment"
+        android:icon="@drawable/ic_add"
+        android:title="Add" />
+
 </menu>

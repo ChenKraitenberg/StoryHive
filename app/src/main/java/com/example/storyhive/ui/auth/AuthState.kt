@@ -1,8 +1,8 @@
-// ui/auth/AuthState.kt
 package com.example.storyhive.ui.auth
 
 sealed class AuthState {
+    object Unauthenticated : AuthState()
     object Loading : AuthState()
-    data class Success(val userId: String) : AuthState()
+    object Success : AuthState()
     data class Error(val message: String) : AuthState()
 }

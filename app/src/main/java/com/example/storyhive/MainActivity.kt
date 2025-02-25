@@ -9,47 +9,55 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.storyhive.databinding.ActivityMainBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.squareup.picasso.Picasso
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Picasso.get().setLoggingEnabled(true) // הפעלת לוגים של Picasso
+//        try {
+//            val picasso = Picasso.Builder(this)
+//                .loggingEnabled(true)
+//                .indicatorsEnabled(true)
+//                .build()
+//            Picasso.setSingletonInstance(picasso)
+//        } catch (e: IllegalStateException) {
+//            // Picasso כבר מאותחל, פשוט הפעל לוגים
+//            Picasso.get().setLoggingEnabled(true)
+//        }
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // הגדרת ה-Toolbar
-        setSupportActionBar(binding.toolbar)
-
-        // הגדרת ה-NavController
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // מחבר את ה-Toolbar לניווט
-        setupActionBarWithNavController(navController)
-
-        // מחבר את ה-BottomNavigationView ל-NavController
-        binding.bottomNavigationView.apply {
-            // קישור ל-NavController
-            setupWithNavController(navController)
-        }
-
-        // מסתיר/מציג את ה-Toolbar בהתאם למסך
+        // מסתיר/מציג את ה-BottomNav בהתאם למסך
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.welcomeFragment) {
-                supportActionBar?.hide()
-            } else {
-                supportActionBar?.show()
-                // מפעיל את כפתור החזרה
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                supportActionBar?.setDisplayShowHomeEnabled(true)
+            when (destination.id) {
+                R.id.welcomeFragment, R.id.loginFragment, R.id.signUpFragment -> {
+                    binding.bottomNavigationView.visibility = View.GONE
+                    supportActionBar?.hide()
+                }
+                else -> {
+                    if (auth.currentUser == null) {
+                        // אם המשתמש לא מחובר, חזור למסך הכניסה
+                        navController.navigate(R.id.welcomeFragment)
+                    } else {
+                        binding.bottomNavigationView.visibility = View.VISIBLE
+                        supportActionBar?.show()
+                    }
+                }
             }
         }
-    }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+        // מחבר את ה-BottomNav לניווט
+        binding.bottomNavigationView.setupWithNavController(navController)
     }
 }

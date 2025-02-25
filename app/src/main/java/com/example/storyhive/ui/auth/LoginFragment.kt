@@ -10,11 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.storyhive.R
 import com.example.storyhive.databinding.FragmentLoginBinding
-import com.example.storyhive.viewmodels.AuthViewModel
 
 class LoginFragment : Fragment() {
+
+    // שימוש ב־View Binding
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+
+    // קבלת ה־ViewModel באמצעות delegation
     private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
@@ -26,56 +29,69 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
+    // לאחר יצירת התצוגה, מוגדרים המאזינים והמעקב אחרי ה־ViewModel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupListeners()
         observeViewModel()
     }
 
+    // מאזין ללחיצות על כפתור הכניסה
     private fun setupListeners() {
         binding.loginButton.setOnClickListener {
-            val email = binding.emailInput.text.toString()
-            val password = binding.passwordInput.text.toString()
+            // קריאת הערכים מהקלט של המשתמש
+            val email = binding.emailInput.text.toString().trim()
+            val password = binding.passwordInput.text.toString().trim()
 
+            // בדיקת תקינות הקלט
             if (validateInput(email, password)) {
-                viewModel.login(email, password)
+                viewModel.signIn(email, password)
             }
         }
     }
 
+    // מעקב אחרי מצב ההתחברות כפי שמספק ה־ViewModel
     private fun observeViewModel() {
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is AuthState.Success -> {
                     findNavController().navigate(R.id.action_login_to_home)
                 }
+
                 is AuthState.Error -> {
-                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                 }
+
                 is AuthState.Loading -> {
-                    // הצג loading spinner אם יש
+                    // הציגי Spinner אם תרצי, או השאירי ריק
                 }
+                else -> {
+                    // כל מצב אחר שלא נתמך
+                }
+
             }
         }
     }
 
+
+    // בדיקת תקינות הקלט, עם הודעות שגיאה מתאימות
     private fun validateInput(email: String, password: String): Boolean {
         var isValid = true
 
         if (email.isEmpty()) {
-            binding.emailInput.error = "Email is required"
+            binding.emailInput.error = "יש למלא אימייל"
             isValid = false
         }
 
         if (password.isEmpty()) {
-            binding.passwordInput.error = "Password is required"
+            binding.passwordInput.error = "יש למלא סיסמה"
             isValid = false
         }
 
         return isValid
     }
 
+    // שחרור המשאבים של ה־binding כדי למנוע זליגת זיכרון
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

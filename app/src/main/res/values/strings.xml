@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">StoryHive</string>
     <string name="app_logo">StoryHive Logo</string>
-    <string name="user_profile">User Profile</string>
+    <string name="user_profile">Profile</string>
     <string name="like">Like</string>
     <string name="comment">Comment</string>
     <string name="share">Share</string>
     <string name="profile_image">Profile Image</string>
-
+    <string name="search_hint">Search books...</string>
+    <string name="publish_post">Publish Post</string>
 </resources>

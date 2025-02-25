@@ -47,6 +47,45 @@
         android:id="@+id/profileFragment"
         android:name="com.example.storyhive.ui.profile.ProfileFragment"
         android:label="Profile" />
+    <action
+        android:id="@+id/action_profileFragment_to_loginFragment"
+        app:destination="@id/loginFragment" />
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.storyhive.ui.search.SearchFragment"
+        android:label="Search">
+        <action
+            android:id="@+id/action_search_to_bookDetail"
+            app:destination="@id/bookDetailFragment">
+            <argument
+                android:name="bookId"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookDetailFragment"
+        android:name="com.example.storyhive.ui.book.BookDetailFragment"
+        android:label="Book Details">
+        <argument
+            android:name="bookId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_to_login"
+            app:destination="@id/loginFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/createPostFragment"
+        android:name="com.example.storyhive.ui.addPost.CreatePostFragment"
+        android:label="Create Post">
+        <action
+            android:id="@+id/action_createPost_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 
 </navigation>
