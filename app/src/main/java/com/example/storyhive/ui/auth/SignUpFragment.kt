@@ -83,6 +83,10 @@ class SignUpFragment : Fragment() {
             }
             true
         }
+        // הוספת מאזין לכפתור התחברות
+        binding.loginTextView.setOnClickListener {
+            findNavController().navigate(R.id.action_signUpFragment_to_loginFragment)
+        }
     }
 
     private fun showImageOptionsDialog() {

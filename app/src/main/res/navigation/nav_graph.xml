@@ -21,6 +21,9 @@
         android:name="com.example.storyhive.ui.auth.LoginFragment"
         android:label="sign in">
         <action
+            android:id="@+id/action_loginFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
             android:id="@+id/action_login_to_home"
             app:destination="@id/homeFragment"
             app:popUpTo="@id/welcomeFragment"
@@ -31,6 +34,9 @@
         android:id="@+id/signUpFragment"
         android:name="com.example.storyhive.ui.auth.SignUpFragment"
         android:label="sign up">
+        <action
+            android:id="@+id/action_signUpFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
         <action
             android:id="@+id/action_signUp_to_home"
             app:destination="@id/homeFragment"

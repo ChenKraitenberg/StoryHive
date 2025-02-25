@@ -1,6 +1,8 @@
 package com.example.storyhive.ui.home
 
+import StorageRepository
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.storyhive.R
 import com.example.storyhive.data.models.Post
 import com.example.storyhive.databinding.ItemPostBinding
@@ -41,10 +44,16 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
     }
 
 
+//override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
+//    val post = getItem(position)
+//    holder.bind(post)
+//}
 override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
     val post = getItem(position)
     holder.bind(post)
 }
+
+
     private class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
         override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
             return oldItem.postId == newItem.postId
@@ -64,11 +73,29 @@ override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
                 postAuthor.text = post.userDisplayName
 
                 // הצגת תמונת פרופיל
+//                if (post.userProfileImage.isNotEmpty()) {
+//                    Picasso.get().load(post.userProfileImage).placeholder(R.drawable.ic_user_placeholder).into(profileImage)
+//                } else {
+//                    profileImage.setImageResource(R.drawable.ic_user_placeholder)
+//                }
+                // הצגת תמונת פרופיל
+// הצגת תמונת פרופיל - שנה את הקוד הקיים
                 if (post.userProfileImage.isNotEmpty()) {
-                    Picasso.get().load(post.userProfileImage).placeholder(R.drawable.ic_user_placeholder).into(profileImage)
+                    try {
+                        // נסה להמיר את ה-base64 string לbitmap
+                        val bitmap = StorageRepository().decodeBase64ToBitmap(post.userProfileImage)
+                        binding.profileImage.setImageBitmap(bitmap)
+                    } catch (e: Exception) {
+                        Log.e("PostsAdapter", "Failed to decode user profile image", e)
+                        binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
+                    }
                 } else {
-                    profileImage.setImageResource(R.drawable.ic_user_placeholder)
+                    binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
                 }
+                Glide.with(itemView.context)
+                    .load(post.userProfileImage)
+                    .placeholder(R.drawable.ic_user_placeholder)
+                    .into(binding.profileImage)
 
                 // הצגת שם הספר (כותרת)
                 postTitle.text = post.bookTitle

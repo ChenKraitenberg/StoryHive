@@ -27,6 +27,7 @@ data class Post(
     val bookAuthor: String = "",
     val bookDescription: String = "",
     var imageBase64: String? = null, // יכול להיות null
+    var imageUrl: String? = null, // יכול להיות null
     var rating: Float = 0.0f,
     val review: String = "",
     val likes: Int = 0,

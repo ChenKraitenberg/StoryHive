@@ -54,70 +54,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-//    private fun setupProfile() {
-//        val currentUser = FirebaseAuth.getInstance().currentUser
-//
-//        currentUser?.let { user ->
-//            Log.d("ProfileFragment", "Setting up profile for: ${user.uid}")
-//            Log.d("ProfileFragment", "Display name: ${user.displayName}")
-//            Log.d("ProfileFragment", "Photo URL: ${user.photoUrl}")
-//
-//            // עדכון שם המשתמש
-//            binding.userName.text = user.displayName ?: "Unknown"
-//
-//            // תמיד לנסות קודם לטעון מהפיירסטור
-//            FirebaseFirestore.getInstance().collection("users")
-//                .document(user.uid)
-//                .get()
-//                .addOnSuccessListener { document ->
-//                    if (document.exists()) {
-//                        val profileImageUrl = document.getString("profileImageUrl")
-//                        Log.d("ProfileFragment", "Firestore profile image URL: $profileImageUrl")
-//
-//                        if (!profileImageUrl.isNullOrEmpty()) {
-//                            // טעינת התמונה מהפיירסטור
-//                            Picasso.get()
-//                                .load(profileImageUrl)
-//                                .placeholder(R.drawable.ic_user_placeholder)
-//                                .into(binding.profileImage)
-//                        } else if (user.photoUrl != null) {
-//                            // אם אין בפיירסטור, ננסה מה-Auth
-//                            Log.d("ProfileFragment", "Using Auth photo URL")
-//                            Picasso.get()
-//                                .load(user.photoUrl)
-//                                .placeholder(R.drawable.ic_user_placeholder)
-//                                .into(binding.profileImage)
-//                        } else {
-//                            // אם אין תמונה בכלל, נשתמש בברירת מחדל
-//                            binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
-//                        }
-//                    } else {
-//                        // אם המסמך לא קיים, בדוק ב-Auth
-//                        if (user.photoUrl != null) {
-//                            Picasso.get()
-//                                .load(user.photoUrl)
-//                                .placeholder(R.drawable.ic_user_placeholder)
-//                                .into(binding.profileImage)
-//                        } else {
-//                            binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
-//                        }
-//                    }
-//                }
-//                .addOnFailureListener { e ->
-//                    Log.e("ProfileFragment", "Error loading user data", e)
-//                    // אם נכשל בטעינה מפיירסטור, ננסה מה-Auth
-//                    if (user.photoUrl != null) {
-//                        Picasso.get()
-//                            .load(user.photoUrl)
-//                            .placeholder(R.drawable.ic_user_placeholder)
-//                            .into(binding.profileImage)
-//                    }
-//                }
-//
-//            // טעינת סטטיסטיקות
-//            loadUserStatistics(user.uid)
-//        }
-//    }
 private fun setupProfile() {
     val currentUser = FirebaseAuth.getInstance().currentUser
 
@@ -150,6 +86,8 @@ private fun setupProfile() {
             .addOnFailureListener {
                 binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
             }
+
+        loadUserStatistics(user.uid) // טעינת סטטיסטיקות
     }
 }
     private fun loadUserStatistics(userId: String) {

@@ -34,6 +34,8 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
         observeViewModel()
+
+
     }
 
     // מאזין ללחיצות על כפתור הכניסה
@@ -47,6 +49,10 @@ class LoginFragment : Fragment() {
             if (validateInput(email, password)) {
                 viewModel.signIn(email, password)
             }
+        }
+        // הוספת מאזין לכפתור ההרשמה
+        binding.signUpTextView.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
         }
     }
 

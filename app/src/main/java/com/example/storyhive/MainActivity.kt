@@ -19,16 +19,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Picasso.get().setLoggingEnabled(true) // הפעלת לוגים של Picasso
-//        try {
-//            val picasso = Picasso.Builder(this)
-//                .loggingEnabled(true)
-//                .indicatorsEnabled(true)
-//                .build()
-//            Picasso.setSingletonInstance(picasso)
-//        } catch (e: IllegalStateException) {
-//            // Picasso כבר מאותחל, פשוט הפעל לוגים
-//            Picasso.get().setLoggingEnabled(true)
-//        }
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

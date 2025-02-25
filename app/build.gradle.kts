@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.storyhive"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 35 // שמרנו על תאימות
         versionCode = 1
         versionName = "1.0"
@@ -44,6 +44,8 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+
 }
 
 dependencies {
@@ -101,9 +103,10 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
 
+
     // Google Play Services Auth
     implementation(libs.play.services.auth)
 }
 
 // הפעלת Google Services
-apply(plugin = "com.google.gms.google-services")
+

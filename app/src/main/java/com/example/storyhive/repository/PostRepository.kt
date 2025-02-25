@@ -122,21 +122,55 @@ class PostRepository {
     }
 
     // יצירת פוסט חדש
+//    suspend fun createPost(post: Post) {
+//        val user = FirebaseAuth.getInstance().currentUser
+//        if (user != null) {
+//            val newPostRef = postsCollection.document()
+//            val postWithUserInfo = post.copy(
+//                postId = newPostRef.id,
+//                userId = user.uid,
+//                userDisplayName = user.displayName ?: "Unknown",  // הוספת שם המשתמש
+//                timestamp = System.currentTimeMillis()
+//            )
+//            newPostRef.set(postWithUserInfo).await()
+//        }
+//    }
+
     suspend fun createPost(post: Post) {
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
-            val newPostRef = postsCollection.document()
-            val postWithUserInfo = post.copy(
-                postId = newPostRef.id,
-                userId = user.uid,
-                userDisplayName = user.displayName ?: "Unknown",  // הוספת שם המשתמש
-                timestamp = System.currentTimeMillis()
-            )
-            newPostRef.set(postWithUserInfo).await()
+            try {
+                // נסה לקבל את תמונת הפרופיל מ-Firestore
+                val userDocument = firestore.collection("users")
+                    .document(user.uid)
+                    .get()
+                    .await()
+
+                // קבל את תמונת הפרופיל כ-base64 אם קיימת
+                var userProfileImage = ""
+                if (userDocument.exists()) {
+                    userProfileImage = userDocument.getString("profileImageBase64") ?: ""
+                    Log.d("FirebaseRepository", "Found user profile image: ${userProfileImage.take(20)}...")
+                }
+
+                // יצירת הפוסט עם תמונת הפרופיל
+                val newPostRef = postsCollection.document()
+                val postWithUserInfo = post.copy(
+                    postId = newPostRef.id,
+                    userId = user.uid,
+                    userDisplayName = user.displayName ?: "Unknown",
+                    userProfileImage = userProfileImage,  // שימוש בתמונה שמצאנו
+                    timestamp = System.currentTimeMillis()
+                )
+
+                Log.d("FirebaseRepository", "Creating post with profileImage included: ${userProfileImage.isNotEmpty()}")
+                newPostRef.set(postWithUserInfo).await()
+            } catch (e: Exception) {
+                Log.e("FirebaseRepository", "Error creating post", e)
+                throw e
+            }
         }
     }
-
-
      fun likePost(postId: String) {
         val userId = auth.currentUser?.uid ?: return
         val postRef = postsCollection.document(postId)

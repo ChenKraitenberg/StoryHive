@@ -11,8 +11,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.storyhive.data.models.Post
 import com.example.storyhive.repository.FirebaseRepository
 import com.example.storyhive.repository.PostRepository
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.net.URLEncoder
+import kotlin.coroutines.resume
 
 class CreatePostViewModel : ViewModel() {
     private val repository = PostRepository()
@@ -39,7 +45,7 @@ class CreatePostViewModel : ViewModel() {
                 val imageBase64 = selectedImageUri?.let { uri ->
                     try {
                         Log.d("CreatePostViewModel", "Encoding image to Base64...")
-                        val encodedImage = storageRepository.uploadImage(context, uri, "posts_images") // משתמשים ב-context
+                        val encodedImage = storageRepository.uploadImage(context, uri, "posts_images")
                         Log.d("CreatePostViewModel", "Image encoded successfully!")
                         encodedImage
                     } catch (e: Exception) {
@@ -56,16 +62,42 @@ class CreatePostViewModel : ViewModel() {
                     return@launch
                 }
 
-                // בנה את אובייקט הפוסט
+                val userId = currentUser.uid
+                val userName = currentUser.displayName ?: "Anonymous"
+
+                // בדיקת תמונת פרופיל - השינוי העיקרי כאן
+                var userProfileImage = currentUser.photoUrl?.toString() ?: ""
+
+// אם אין תמונת פרופיל ב-FirebaseAuth, נסה להביא מ-Firestore
+                if (userProfileImage.isEmpty()) {
+                    try {
+                        userProfileImage = getUserProfileImageFromFirestore(userId)
+                        Log.d("CreatePostViewModel", "Got profile image from Firestore: $userProfileImage")
+                    } catch (e: Exception) {
+                        Log.e("CreatePostViewModel", "Failed to get profile image from Firestore", e)
+                    }
+
+                    // אם עדיין אין תמונת פרופיל, השתמש בברירת מחדל
+                    if (userProfileImage.isEmpty()) {
+                        // אפשרות 1: להשתמש במשאב מקומי
+                       // userProfileImage = "android.resource://com.example.storyhive/drawable/default_avatar"
+
+                        // אפשרות 2: להשתמש בשירות חיצוני
+                         userProfileImage = "https://ui-avatars.com/api/?name=" +
+                            URLEncoder.encode(userName, "UTF-8") + "&background=random&size=100"
+
+                        Log.d("CreatePostViewModel", "Using default profile image")
+                    }
+                }
                 val post = Post(
-                    userId = currentUser.uid,
-                    userDisplayName = currentUser.displayName ?: "Unknown",
-                    userProfileImage = currentUser.photoUrl?.toString() ?: "",
+                    postId = "",
+                    userId = userId,
+                    userDisplayName = userName,
+                    userProfileImage = userProfileImage,
                     bookTitle = title,
                     bookAuthor = author,
-                    imageBase64 = imageBase64,  // שמירת התמונה כ-Base64
                     review = review,
-                    rating = rating,
+                    likes = 0,
                     timestamp = System.currentTimeMillis()
                 )
 
@@ -87,6 +119,47 @@ class CreatePostViewModel : ViewModel() {
             }
         }
     }
+
+//    fun getUserProfileImageFromFirestore(userId: String): String {
+//        val firestore = FirebaseFirestore.getInstance()
+//        var profileImage = ""
+//
+//        firestore.collection("users").document(userId)
+//            .get()
+//            .addOnSuccessListener { document ->
+//                if (document != null && document.contains("profileImage")) {
+//                    profileImage = document.getString("profileImage") ?: ""
+//                }
+//            }
+//            .addOnFailureListener {
+//                Log.e("Firestore", "Failed to fetch user profile image")
+//            }
+//
+//        return profileImage
+//    }
+suspend fun getUserProfileImageFromFirestore(userId: String): String {
+    return suspendCancellableCoroutine { continuation ->
+        val firestore = FirebaseFirestore.getInstance()
+
+        firestore.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                val profileImage = if (document != null && document.contains("profileImage")) {
+                    document.getString("profileImage") ?: ""
+                } else {
+                    ""
+                }
+                Log.d("CreatePostViewModel", "Got profile image from Firestore: $profileImage")
+                continuation.resume(profileImage)
+            }
+            .addOnFailureListener { e ->
+                Log.e("CreatePostViewModel", "Failed to fetch user profile image", e)
+                continuation.resume("")
+            }
+    }
+}
+
+
 
 
     private fun validateInput(title: String, author: String, review: String): Boolean {

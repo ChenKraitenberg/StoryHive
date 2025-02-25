@@ -133,6 +133,24 @@
                 android:text="SIGN UP"
                 android:layout_marginTop="32dp"
                 android:padding="12dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Have an account?"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/loginTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign in"
+                android:textColor="@color/design_default_color_primary"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:textSize="16sp"/>
+
 
         </LinearLayout>
     </ScrollView>
