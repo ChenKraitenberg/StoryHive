@@ -97,6 +97,7 @@ override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
                     .placeholder(R.drawable.ic_user_placeholder)
                     .into(binding.profileImage)
 
+
                 // הצגת שם הספר (כותרת)
                 postTitle.text = post.bookTitle
 

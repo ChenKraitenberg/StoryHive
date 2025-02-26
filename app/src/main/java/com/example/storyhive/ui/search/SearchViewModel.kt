@@ -25,22 +25,30 @@ class SearchViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = RetrofitClient.googleBooksService.searchBooks(query)
-                val books = response.items.mapNotNull { googleBook ->
-                    googleBook.volumeInfo.imageLinks?.thumbnail?.let {
+                val items = response.items ?: emptyList()  // טיפול במקרה של null
+
+                val books = items.mapNotNull { googleBook ->
+                    try {
+                        // המרה של Google Book ל-Book מקומי
                         Book(
                             id = googleBook.id,
                             title = googleBook.volumeInfo.title,
-                            author = googleBook.volumeInfo.authors?.firstOrNull() ?: "Unknown Author",
+                            author = googleBook.volumeInfo.authors?.joinToString(", ") ?: "Unknown Author",
+                            description = googleBook.volumeInfo.description ?: "",
+                            coverUrl = googleBook.volumeInfo.imageLinks?.thumbnail?.replace("http:", "https:") ?: "",
                             genre = "Unknown",
-                            rating = 0f,
-                            coverUrl = it
+                            rating = 0f
                         )
+                    } catch (e: Exception) {
+                        null  // דלג על ספרים עם נתונים חסרים
                     }
                 }
                 _searchResults.value = books
             } catch (e: Exception) {
-                // Handle error
+                // טיפול בשגיאה
                 _searchResults.value = emptyList()
+                // כדאי להוסיף לוג לשגיאה
+                android.util.Log.e("SearchViewModel", "Error searching books", e)
             } finally {
                 _isLoading.value = false
             }

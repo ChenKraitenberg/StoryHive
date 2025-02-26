@@ -13,47 +13,88 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 
 class StorageRepository {
 
-    suspend fun uploadImage(context: Context, uri: Uri, collectionName: String): String? {
+//    suspend fun uploadImage(context: Context, uri: Uri, collectionName: String): String? {
+//        return withContext(Dispatchers.IO) {
+//            try {
+//                Log.d("StorageRepository", "Encoding image to Base64...")
+//
+//                // המר את ה-URI ל-Bitmap
+//                val bitmap = if (Build.VERSION.SDK_INT < 28) {
+//                    MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+//                } else {
+//                    val source = ImageDecoder.createSource(context.contentResolver, uri) // תוקן כאן
+//                    ImageDecoder.decodeBitmap(source)
+//                }
+//
+//                // הקטן את התמונה לפני המרה
+//                val resizedBitmap = getResizedBitmap(bitmap, 500)
+//
+//                // המרת התמונה ל-Base64
+//                val imageBase64 = encodeImageToBase64(resizedBitmap)
+//
+//                Log.d("StorageRepository", "Image successfully encoded!")
+//
+//                // שמירת התמונה ב-Firestore
+//                val db = FirebaseFirestore.getInstance()
+//                val documentRef = db.collection(collectionName).document()
+//                val data = hashMapOf("imageBase64" to imageBase64)
+//
+//                documentRef.set(data).await()
+//
+//                Log.d("StorageRepository", "Image saved to Firestore successfully!")
+//
+//                return@withContext imageBase64  // החזרת ה-Base64
+//            } catch (e: Exception) {
+//                Log.e("StorageRepository", "Failed to upload image", e)
+//                return@withContext null
+//            }
+//        }
+//    }
+
+    suspend fun uploadImage(context: Context, uri: Uri, path: String): String {
         return withContext(Dispatchers.IO) {
             try {
                 Log.d("StorageRepository", "Encoding image to Base64...")
 
-                // המר את ה-URI ל-Bitmap
-                val bitmap = if (Build.VERSION.SDK_INT < 28) {
-                    MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                // המר נתיב לנתיב תקין - במקום "profile_images/userId", השתמש ב-"images" ואז המסמך יהיה שם התמונה
+                // נתיב בפיירסטור לקולקציה חייב להיות עם מספר אי-זוגי של סגמנטים
+                val collection = "images"
+                val documentId = if (path.contains("/")) {
+                    path.replace("/", "_")
                 } else {
-                    val source = ImageDecoder.createSource(context.contentResolver, uri) // תוקן כאן
-                    ImageDecoder.decodeBitmap(source)
+                    path
                 }
 
-                // הקטן את התמונה לפני המרה
-                val resizedBitmap = getResizedBitmap(bitmap, 500)
+                // קרא את התמונה והמר אותה ל-Base64
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val bytes = inputStream?.readBytes()
+                inputStream?.close()
 
-                // המרת התמונה ל-Base64
-                val imageBase64 = encodeImageToBase64(resizedBitmap)
+                if (bytes != null) {
+                    val base64Image = Base64.encodeToString(bytes, Base64.DEFAULT)
+                    Log.d("StorageRepository", "Image successfully encoded!")
 
-                Log.d("StorageRepository", "Image successfully encoded!")
+                    // שמור את התמונה בפיירסטור
+                    FirebaseFirestore.getInstance()
+                        .collection(collection)
+                        .document(documentId)
+                        .set(mapOf("imageData" to base64Image))
+                        .await()
 
-                // שמירת התמונה ב-Firestore
-                val db = FirebaseFirestore.getInstance()
-                val documentRef = db.collection(collectionName).document()
-                val data = hashMapOf("imageBase64" to imageBase64)
-
-                documentRef.set(data).await()
-
-                Log.d("StorageRepository", "Image saved to Firestore successfully!")
-
-                return@withContext imageBase64  // החזרת ה-Base64
+                    return@withContext base64Image
+                } else {
+                    throw IOException("Failed to read image data")
+                }
             } catch (e: Exception) {
                 Log.e("StorageRepository", "Failed to upload image", e)
-                return@withContext null
+                throw e
             }
         }
     }
-
 
 
     fun encodeImageToBase64(bitmap: Bitmap): String {
@@ -78,14 +119,34 @@ class StorageRepository {
 
         return Bitmap.createScaledBitmap(bitmap, width, height, true)
     }
-    fun decodeBase64ToBitmap(base64String: String): Bitmap? {
-        return try {
-            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-        } catch (e: Exception) {
-            Log.e("StorageRepository", "Failed to decode Base64", e)
-            null
+//    fun decodeBase64ToBitmap(base64String: String): Bitmap? {
+//        return try {
+//            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
+//            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+//        } catch (e: Exception) {
+//            Log.e("StorageRepository", "Failed to decode Base64", e)
+//            null
+//        }
+//    }
+// בדיקת תקינות לפני פענוח Base64
+fun decodeBase64ToBitmap(base64String: String): Bitmap? {
+    return try {
+        // וידוא שהמחרוזת תקינה לפני פענוח
+        if (base64String.isEmpty()) {
+            Log.e("StorageRepository", "Empty base64 string")
+            return null
         }
-    }
 
+        // ניסיון לפענח רק אם המחרוזת נראית חוקית
+        val cleanedBase64 = base64String.trim()
+        val decodedBytes = Base64.decode(cleanedBase64, Base64.DEFAULT)
+        BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+    } catch (e: IllegalArgumentException) {
+        Log.e("StorageRepository", "Failed to decode Base64", e)
+        null
+    } catch (e: Exception) {
+        Log.e("StorageRepository", "Error creating bitmap from Base64", e)
+        null
+    }
+}
 }

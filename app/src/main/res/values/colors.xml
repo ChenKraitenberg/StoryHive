@@ -38,6 +38,10 @@
     <color name="textOnPrimary">#FFFFFF</color>  <!-- צבע טקסט על רקע כהה -->
     <color name="white">#FFFFFF</color>  <!-- צבע לבן -->
 
+    <color name="black">#000000</color>  <!-- צבע שחור -->
+    <color name="gray">#9E9E9E</color>  <!-- צבע אפור -->
+    <color name="gray_light">#F5F5F5</color>  <!-- צבע אפור בהיר -->
+    <color name="blue">#1A73E8</color>  <!-- צבע כחול -->
 
 
 

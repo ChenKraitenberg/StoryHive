@@ -106,6 +106,9 @@ dependencies {
 
     // Google Play Services Auth
     implementation(libs.play.services.auth)
+
+    implementation("androidx.cardview:cardview:1.0.0")
+
 }
 
 // הפעלת Google Services

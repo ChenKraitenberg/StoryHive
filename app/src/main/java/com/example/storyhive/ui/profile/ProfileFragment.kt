@@ -54,42 +54,47 @@ class ProfileFragment : Fragment() {
         }
     }
 
-private fun setupProfile() {
-    val currentUser = FirebaseAuth.getInstance().currentUser
+    private fun setupProfile() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
 
-    currentUser?.let { user ->
-        binding.userName.text = user.displayName ?: "Unknown"
+        currentUser?.let { user ->
+            binding.usernameTextView.text = user.displayName ?: "Unknown"
 
-        // נסה לטעון תמונת פרופיל מפיירסטור
-        FirebaseFirestore.getInstance()
-            .collection("users")
-            .document(user.uid)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val profileImageBase64 = document.getString("profileImageBase64")
+            // נסה לטעון תמונת פרופיל ונתונים נוספים מפיירסטור
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(user.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        // טען את תמונת הפרופיל
+                        val profileImageBase64 = document.getString("profileImageBase64")
 
-                    if (!profileImageBase64.isNullOrEmpty()) {
-                        try {
-                            // המר את ה-base64 לתמונה והצג אותה
-                            val bitmap = StorageRepository().decodeBase64ToBitmap(profileImageBase64)
-                            binding.profileImage.setImageBitmap(bitmap)
-                        } catch (e: Exception) {
-                            Log.e("ProfileFragment", "Failed to decode profile image", e)
-                            binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
+                        // טען את הביו
+                        val bio = document.getString("bio")
+                        binding.bioTextView.text = bio ?: ""
+
+                        if (!profileImageBase64.isNullOrEmpty()) {
+                            try {
+                                // המר את ה-base64 לתמונה והצג אותה
+                                val bitmap = StorageRepository().decodeBase64ToBitmap(profileImageBase64)
+                                binding.profileImageView.setImageBitmap(bitmap)
+                            } catch (e: Exception) {
+                                Log.e("ProfileFragment", "Failed to decode profile image", e)
+                                binding.profileImageView.setImageResource(R.drawable.ic_user_placeholder)
+                            }
+                        } else {
+                            binding.profileImageView.setImageResource(R.drawable.ic_user_placeholder)
                         }
-                    } else {
-                        binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
                     }
                 }
-            }
-            .addOnFailureListener {
-                binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
-            }
+                .addOnFailureListener {
+                    binding.profileImageView.setImageResource(R.drawable.ic_user_placeholder)
+                }
 
-        loadUserStatistics(user.uid) // טעינת סטטיסטיקות
+            loadUserStatistics(user.uid) // טעינת סטטיסטיקות
+        }
     }
-}
     private fun loadUserStatistics(userId: String) {
         val db = FirebaseFirestore.getInstance()
 
@@ -121,8 +126,8 @@ private fun setupProfile() {
     }
 
     private fun updateStatsUI(stats: UserPostsStats) {
-        binding.postsCount.text = "${stats.postsCount} Posts"
-        binding.likesCount.text = "${stats.totalLikes} Likes"
+        binding.postsCountTextView.text = "${stats.postsCount} Posts"
+        binding.likesCountTextView.text = "${stats.totalLikes} Likes"
     }
     private fun setupButtons() {
         binding.editProfileButton.setOnClickListener {
@@ -147,7 +152,16 @@ private fun setupProfile() {
 
     private fun updateEmptyState(empty: Boolean) {
         val binding = _binding ?: return // אם binding null, צאי מהפונקציה
-        binding.emptyStateText.visibility = View.VISIBLE
+
+        if (empty) {
+            // אין פוסטים - הצג את הודעת "No posts yet"
+            binding.noPostsTextView.visibility = View.VISIBLE
+            binding.postsRecyclerView.visibility = View.GONE
+        } else {
+            // יש פוסטים - הסתר את ההודעה והצג את הרשימה
+            binding.noPostsTextView.visibility = View.GONE
+            binding.postsRecyclerView.visibility = View.VISIBLE
+        }
     }
 
 

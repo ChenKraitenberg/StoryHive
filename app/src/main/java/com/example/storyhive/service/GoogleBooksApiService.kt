@@ -10,8 +10,11 @@ interface GoogleBooksApiService {
     @GET("volumes")
     suspend fun searchBooks(
         @Query("q") query: String,
-        @Query("key") apiKey: String = "AIzaSyCacwYk8Llj3GoA6rwi8PMqh5r3X6gNl6Y",
-        @Query("maxResults") maxResults: Int = 10
+        @Query("key") apiKey: String = "AIzaSyAP3_eMESPm5rzA1_0S6k7FYQxtGYGI7Jk",
+        @Query("maxResults") maxResults: Int = 10,
+        @Query("printType") printType: String = "books"
+
+
     ): GoogleBooksResponse
 
     @GET("volumes/{bookId}")
