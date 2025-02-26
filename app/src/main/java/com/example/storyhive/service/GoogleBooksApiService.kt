@@ -1,5 +1,6 @@
-package com.example.storyhive.service
+package com.example.storyhive.service  // שנה לפי החבילה שלך
 
+import com.example.storyhive.BuildConfig  // שנה לפי החבילה שלך
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -7,10 +8,11 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface GoogleBooksApiService {
+
     @GET("volumes")
     suspend fun searchBooks(
         @Query("q") query: String,
-        @Query("key") apiKey: String = "AIzaSyAP3_eMESPm5rzA1_0S6k7FYQxtGYGI7Jk",
+        @Query("key") apiKey: String = BuildConfig.GOOGLE_BOOKS_API_KEY,
         @Query("maxResults") maxResults: Int = 10,
         @Query("printType") printType: String = "books"
 

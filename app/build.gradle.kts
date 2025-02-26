@@ -1,3 +1,14 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+// קריאת מפתחות מהקובץ החיצוני
+val apiKeysPropertiesFile = rootProject.file("apikeys.properties")
+val apiKeysProperties = Properties()
+if (apiKeysPropertiesFile.exists()) {
+    apiKeysProperties.load(FileInputStream(apiKeysPropertiesFile))
+} else {
+    println("WARNING: apikeys.properties file not found!")
+}
 // build.gradle.kts (Module Level - in app folder)
 plugins {
     id("com.android.application")
@@ -20,6 +31,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // הוספת מפתח ה-API כ-BuildConfig field
+        buildConfigField(
+            "String",
+            "GOOGLE_BOOKS_API_KEY",
+            "\"${apiKeysProperties.getProperty("GOOGLE_BOOKS_API_KEY", "")}\""
+        )
     }
 
     buildTypes {
@@ -41,10 +59,11 @@ android {
         jvmTarget = "11"
     }
 
+
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
-
 
 }
 
