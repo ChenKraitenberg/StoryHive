@@ -51,7 +51,7 @@ class HomeFragment : Fragment() {
                     HomeFragmentDirections.actionHomeToEditPost(post)
                 )
             }
-=======
+
             setOnDeleteClickListener { post ->  // ✅ הוספת מחיקת פוסט
                 viewModel.deletePost(post.postId)
             }

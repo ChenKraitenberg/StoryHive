@@ -35,8 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="Post Author"
-                android:textColor="@color/text_secondary"
-                android:layout_marginStart="8dp" />
+                android:textColor="@color/text_secondary"/>
           
           
             <!-- Edit Button - Will be visible only for post owners -->
