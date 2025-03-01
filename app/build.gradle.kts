@@ -70,6 +70,7 @@ android {
 dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.foundation.android)
 
     // הגדרת גרסאות
     val navVersion = "2.7.7"
