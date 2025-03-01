@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyhive.databinding.FragmentHomeBinding
+import androidx.navigation.fragment.findNavController
 import com.example.storyhive.ui.home.HomeViewModel
 
 class HomeFragment : Fragment() {
@@ -41,6 +42,14 @@ class HomeFragment : Fragment() {
             setOnCommentClickListener { post ->
                 // TODO: פתיחת מסך תגובות
                 Toast.makeText(requireContext(), "Opening comments for ${post.bookTitle}", Toast.LENGTH_SHORT).show()
+            }
+
+            // Add this block for edit click listener
+            setOnEditClickListener { post ->
+                // Navigate to edit post screen with the post as argument
+                findNavController().navigate(
+                    HomeFragmentDirections.actionHomeToEditPost(post)
+                )
             }
         }
 

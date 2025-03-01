@@ -25,6 +25,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
 
     private var onLikeClickListener: ((Post) -> Unit)? = null
     private var onCommentClickListener: ((Post) -> Unit)? = null
+    private var onEditClickListener: ((Post) -> Unit)? = null
 
     fun setOnLikeClickListener(listener: (Post) -> Unit) {
         onLikeClickListener = listener
@@ -32,6 +33,10 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
 
     fun setOnCommentClickListener(listener: (Post) -> Unit) {
         onCommentClickListener = listener
+    }
+
+    fun setOnEditClickListener(listener: (Post) -> Unit) {
+        onEditClickListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -44,14 +49,11 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
     }
 
 
-//override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-//    val post = getItem(position)
-//    holder.bind(post)
-//}
-override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
+
+    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
     val post = getItem(position)
     holder.bind(post)
-}
+    }
 
 
     private class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
@@ -71,6 +73,14 @@ override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
             binding.apply {
                 // הצגת שם המשתמש
                 postAuthor.text = post.userDisplayName
+
+                // Check if the current user is the post owner
+                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+                val isPostOwner = currentUserId == post.userId
+
+                // Show or hide edit button based on ownership
+                editButton.visibility = if (isPostOwner) View.VISIBLE else View.GONE
+
 
                 // הצגת תמונת פרופיל
 //                if (post.userProfileImage.isNotEmpty()) {
@@ -148,6 +158,11 @@ override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
 
                 commentButton.setOnClickListener {
                     onCommentClickListener?.invoke(post)
+                }
+
+                // Set on edit click listener
+                editButton.setOnClickListener {
+                    onEditClickListener?.invoke(post)
                 }
             }
         }

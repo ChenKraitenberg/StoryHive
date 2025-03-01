@@ -47,12 +47,21 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.storyhive.ui.home.HomeFragment"
-        android:label="דף הבית" />
+        android:label="דף הבית" >
+    <action
+        android:id="@+id/action_home_to_editPost"
+        app:destination="@id/editPostFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.storyhive.ui.profile.ProfileFragment"
         android:label="Profile" />
+
+    <action
+        android:id="@+id/action_profile_to_editPost"
+        app:destination="@id/editPostFragment" />
+
     <action
         android:id="@+id/action_profileFragment_to_loginFragment"
         app:destination="@id/loginFragment" />
@@ -93,5 +102,14 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+
+    <fragment
+        android:id="@+id/editPostFragment"
+        android:name="com.example.storyhive.ui.addPost.EditPostFragment"
+        android:label="Edit Post">
+        <argument
+            android:name="post"
+            app:argType="com.example.storyhive.data.models.Post" />
+    </fragment>
 
 </navigation>
