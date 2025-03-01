@@ -1,5 +1,8 @@
 package com.example.storyhive.data.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 //data class Post(
 //    val postId: String = "",
 //    val userId: String = "",         // uid של המשתמש שיצר את הפוסט
@@ -18,6 +21,7 @@ package com.example.storyhive.data.models
 //    val review: String = ""           // תגובה על הספר )
 //        )
 // וודא שמודל ה-Post שלך נראה כך:
+@Parcelize
 data class Post(
     val postId: String = "",
     val userId: String = "",
@@ -33,6 +37,5 @@ data class Post(
     val likes: Int = 0,
     val likedBy: List<String> = emptyList(),
     val timestamp: Long = System.currentTimeMillis()
-){
+) : Parcelable
 
-}

@@ -62,6 +62,13 @@ class ProfileFragment : Fragment() {
             adapter = postsAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
+
+        // Add edit click listener
+        postsAdapter.setOnEditClickListener { post ->
+            findNavController().navigate(
+                ProfileFragmentDirections.actionProfileToEditPost(post)
+            )
+        }
     }
 
     private fun setupObservers() {

@@ -25,6 +25,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
 
     private var onLikeClickListener: ((Post) -> Unit)? = null
     private var onCommentClickListener: ((Post) -> Unit)? = null
+    private var onEditClickListener: ((Post) -> Unit)? = null
     private var onDeleteClickListener: ((Post) -> Unit)? = null
 
 
@@ -36,10 +37,13 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
         onCommentClickListener = listener
     }
 
+    fun setOnEditClickListener(listener: (Post) -> Unit) {
+        onEditClickListener = listener
+    }
+
     fun setOnDeleteClickListener(listener: (Post) -> Unit) {
         onDeleteClickListener = listener
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = ItemPostBinding.inflate(
@@ -51,14 +55,11 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
     }
 
 
-//override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-//    val post = getItem(position)
-//    holder.bind(post)
-//}
-override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
+
+    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
     val post = getItem(position)
     holder.bind(post)
-}
+    }
 
 
     private class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
@@ -78,6 +79,14 @@ override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
             binding.apply {
                 // הצגת שם המשתמש
                 postAuthor.text = post.userDisplayName
+
+                // Check if the current user is the post owner
+                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+                val isPostOwner = currentUserId == post.userId
+
+                // Show or hide edit button based on ownership
+                editButton.visibility = if (isPostOwner) View.VISIBLE else View.GONE
+
 
                 // הצגת תמונת פרופיל
 //                if (post.userProfileImage.isNotEmpty()) {
@@ -157,6 +166,11 @@ override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
                     onCommentClickListener?.invoke(post)
                 }
 
+                // Set on edit click listener
+                editButton.setOnClickListener {
+                    onEditClickListener?.invoke(post)
+                }
+                
                 // ✅ הצגת כפתור מחיקה רק ליוצר הפוסט
                 val isAuthor = post.userId == currentUserUid
                 deleteButton.visibility = if (isAuthor) View.VISIBLE else View.GONE
