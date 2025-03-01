@@ -23,6 +23,9 @@ class HomeViewModel : ViewModel() {
     private val _error = MutableLiveData<String?>(null)
     val error: LiveData<String?> = _error
 
+    private val _deleteStatus = MutableLiveData<Boolean>()
+    val deleteStatus: LiveData<Boolean> get() = _deleteStatus
+
     init {
         loadPosts()
     }
@@ -64,12 +67,28 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    fun deletePost(postId: String) {
+        viewModelScope.launch {
+            try {
+                val result = repository.deletePost(postId) // ✅ ודא שהפונקציה מחזירה ערך
+                _deleteStatus.postValue(result)
+                if (result) {
+                    loadPosts() // ✅ טען מחדש את הפוסטים לאחר מחיקה מוצלחת
+                }
+            } catch (e: Exception) {
+                Log.e("DeletePost", "Exception: ${e.message}")
+                _deleteStatus.postValue(false) // מחזיר שגיאה אם יש בעיה
+            }
+        }
+    }
 
     fun refreshPosts()
     {
         loadPosts()
 
     }
+
+
 }
 
 private fun Unit.onFailure(action: (Throwable) -> Unit) {
