@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyhive.R
@@ -22,8 +23,9 @@ import com.squareup.picasso.Picasso
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-    private val postsAdapter = PostsAdapter()
+    private var postsAdapter = PostsAdapter()
     private val postRepository = PostRepository()
+    private val viewModel: ProfileViewModel by viewModels() // ✅ הוספת ViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,9 +47,17 @@ class ProfileFragment : Fragment() {
         setupRecyclerView()
         setupButtons()
         loadUserData()
+        setupObservers() // ✅ הוספת מאזין לתוצאה של מחיקה
     }
 
+
     private fun setupRecyclerView() {
+        postsAdapter = PostsAdapter().apply {
+            setOnDeleteClickListener { post ->  // ✅ ודא שהמאזין מחובר
+                viewModel.deletePost(post.postId) // ✅ הפעלת המחיקה דרך ה-ViewModel
+            }
+        }
+
         binding.postsRecyclerView.apply {
             adapter = postsAdapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -60,6 +70,17 @@ class ProfileFragment : Fragment() {
             )
         }
     }
+
+    private fun setupObservers() {
+        viewModel.deleteStatus.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                loadUserData() // ✅ ריענון הפוסטים אחרי מחיקה מוצלחת
+            } else {
+                Log.e("ProfileFragment", "שגיאה במחיקת הפוסט")
+            }
+        }
+    }
+
 
     private fun setupProfile() {
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -170,6 +191,7 @@ class ProfileFragment : Fragment() {
             binding.postsRecyclerView.visibility = View.VISIBLE
         }
     }
+
 
 
     fun refreshProfile() {

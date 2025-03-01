@@ -26,6 +26,8 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
     private var onLikeClickListener: ((Post) -> Unit)? = null
     private var onCommentClickListener: ((Post) -> Unit)? = null
     private var onEditClickListener: ((Post) -> Unit)? = null
+    private var onDeleteClickListener: ((Post) -> Unit)? = null
+
 
     fun setOnLikeClickListener(listener: (Post) -> Unit) {
         onLikeClickListener = listener
@@ -37,6 +39,10 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
 
     fun setOnEditClickListener(listener: (Post) -> Unit) {
         onEditClickListener = listener
+    }
+
+    fun setOnDeleteClickListener(listener: (Post) -> Unit) {
+        onDeleteClickListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -163,6 +169,14 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                 // Set on edit click listener
                 editButton.setOnClickListener {
                     onEditClickListener?.invoke(post)
+                }
+                
+                // ✅ הצגת כפתור מחיקה רק ליוצר הפוסט
+                val isAuthor = post.userId == currentUserUid
+                deleteButton.visibility = if (isAuthor) View.VISIBLE else View.GONE
+
+                deleteButton.setOnClickListener {
+                    onDeleteClickListener?.invoke(post)
                 }
             }
         }

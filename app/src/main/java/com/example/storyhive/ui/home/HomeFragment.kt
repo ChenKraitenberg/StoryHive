@@ -51,6 +51,10 @@ class HomeFragment : Fragment() {
                     HomeFragmentDirections.actionHomeToEditPost(post)
                 )
             }
+=======
+            setOnDeleteClickListener { post ->  // ✅ הוספת מחיקת פוסט
+                viewModel.deletePost(post.postId)
+            }
         }
 
         binding.postsRecyclerView.apply {
@@ -80,7 +84,17 @@ class HomeFragment : Fragment() {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         }
+
+        // ✅ מאזין לתוצאה של מחיקת פוסט ומציג הודעה מתאימה
+        viewModel.deleteStatus.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                Toast.makeText(requireContext(), "הפוסט נמחק בהצלחה!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "שגיאה במחיקת הפוסט", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
 
     private fun updateEmptyState(isEmpty: Boolean) {
         binding.emptyStateText.isVisible = isEmpty

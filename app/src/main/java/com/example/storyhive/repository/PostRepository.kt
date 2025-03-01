@@ -206,5 +206,19 @@ class PostRepository {
             }
     }
 
+    //delete post
+    suspend fun deletePost(postId: String): Boolean {
+        return try {
+            firestore.collection("posts").document(postId).delete().await()
+            true // ✅ החזרת true אם המחיקה הצליחה
+        } catch (e: Exception) {
+            Log.e("PostRepository", "שגיאה במחיקת הפוסט: ${e.message}")
+            false // ✅ החזרת false אם המחיקה נכשלה
+        }
+    }
+
+
+
+
 
 }
