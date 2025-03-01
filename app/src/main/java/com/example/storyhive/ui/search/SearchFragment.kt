@@ -1,3 +1,4 @@
+// searchFrafment.kt
 package com.example.storyhive.ui.search
 
 import android.annotation.SuppressLint
@@ -14,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.storyhive.data.models.Book
 import com.example.storyhive.databinding.FragmentSearchBinding
 import com.example.storyhive.ui.book.BooksAdapter
 import kotlinx.coroutines.Job
@@ -45,10 +47,15 @@ class SearchFragment : Fragment() {
     private fun setupRecyclerView() {
         booksAdapter = BooksAdapter { book ->
             // ניווט לפרטי הספר כשלוחצים עליו
-            findNavController().navigate(
-                SearchFragmentDirections.actionSearchToBookDetail(book.id)
-            )
+//            findNavController().navigate(
+//                SearchFragmentDirections.actionSearchToBookDetail(book.id)
+//            )
+
+            val action = SearchFragmentDirections.actionSearchToBookDetail(book)
+            findNavController().navigate(action)
+
         }
+
 
         binding.searchResultsRecyclerView.apply {
             adapter = booksAdapter

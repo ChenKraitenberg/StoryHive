@@ -1,3 +1,4 @@
+// File: BookDetailFragment.kt
 package com.example.storyhive.ui.book
 
 import android.annotation.SuppressLint
@@ -8,56 +9,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.storyhive.R
 import com.example.storyhive.databinding.FragmentBookDetailBinding
 import com.example.storyhive.ui.search.ReviewAdapter
 import com.google.firebase.auth.FirebaseAuth
-import com.squareup.picasso.Picasso
 
-//class BookDetailFragment : Fragment() {
-//    private val viewModel: BookDetailViewModel by viewModels()
-//    private var _binding: FragmentBookDetailBinding? = null
-//    private val binding get() = _binding!!
-//
-//    override fun onCreateView(
-//        inflater: LayoutInflater,
-//        container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View {
-//        _binding = FragmentBookDetailBinding.inflate(inflater, container, false)
-//        return binding.root
-//    }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//
-//        val bookId = arguments?.getString("BOOK_ID") ?: return
-//
-//        viewModel.loadBookDetails(bookId)
-//
-//        viewModel.bookDetails.observe(viewLifecycleOwner) { bookDetails ->
-//            bookDetails?.let {
-//                binding.bookTitleTextView.text = it.title
-//                binding.bookAuthorTextView.text = it.author
-//                binding.bookDescriptionTextView.text = it.description
-//                binding.bookDetailsTextView.text = "${it.publishedDate} | ${it.pageCount} pages"
-//
-//                // Load book cover image
-//                it.coverImageUrl?.let { imageUrl ->
-//                    Glide.with(requireContext())
-//                        .load(imageUrl)
-//                        .placeholder(R.drawable.ic_book_placeholder)
-//                        .into(binding.bookCoverImage)
-//                }
-//            }
-//        }
-//    }
-//}
 class BookDetailFragment : Fragment() {
     private val bookDetailViewModel: BookDetailViewModel by viewModels()
     private val bookRatingViewModel: BookRatingViewModel by viewModels()
+    private val bookReviewViewModel: BookReviewViewModel by viewModels()
+    private val args: BookDetailFragmentArgs by navArgs()
+
     private var _binding: FragmentBookDetailBinding? = null
     private val binding get() = _binding!!
     private lateinit var reviewAdapter: ReviewAdapter
@@ -75,17 +40,26 @@ class BookDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bookId = arguments?.getString("BOOK_ID") ?: return
+            // val bookId = arguments?.getString("BOOK_ID") ?: return
+        val selectedBook = args.selectedBook
 
-        // הכנת RecyclerView לביקורות
-        reviewAdapter = ReviewAdapter(emptyList())
-        binding.reviewsRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = reviewAdapter
-        }
+        // עכשיו יש לך את כל המידע שכבר חזר מהחיפוש
+        binding.bookTitleTextView.text = selectedBook.title
+        binding.bookAuthorTextView.text = selectedBook.author
+        binding.bookDescriptionTextView.text = selectedBook.description
+
+        // ואם אתה רוצה לטעון את התמונה:
+        Glide.with(requireContext())
+            .load(selectedBook.coverUrl)
+            .placeholder(R.drawable.ic_book_placeholder)
+            .into(binding.bookCoverImage)
+
+        val reviewAdapter = ReviewAdapter(emptyList())
+        binding.bookReviewsRecyclerView.adapter = reviewAdapter
+        binding.bookReviewsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // טעינת פרטי ספר
-        bookDetailViewModel.loadBookDetails(bookId)
+        bookDetailViewModel.loadBookDetails(selectedBook.toString())
         bookDetailViewModel.bookDetails.observe(viewLifecycleOwner) { bookDetails ->
             bookDetails?.let {
                 binding.bookTitleTextView.text = it.title // הוסף שורה זו
@@ -104,7 +78,7 @@ class BookDetailFragment : Fragment() {
         }
 
         // טעינת דירוגים וביקורות
-        bookRatingViewModel.fetchBookRatings(bookId)
+        bookRatingViewModel.fetchBookRatings(selectedBook.toString())
         bookRatingViewModel.bookRatings.observe(viewLifecycleOwner) { ratingData ->
             binding.apply {
                 bookRatingBar.rating = ratingData.averageRating
@@ -118,7 +92,7 @@ class BookDetailFragment : Fragment() {
         // הוספת ביקורת
         binding.addReviewButton.setOnClickListener {
             if (FirebaseAuth.getInstance().currentUser != null) {
-                showAddReviewDialog(bookId)
+                showAddReviewDialog(selectedBook.toString())
             } else {
                 // הפניה למסך התחברות
                 findNavController().navigate(R.id.action_to_login)
