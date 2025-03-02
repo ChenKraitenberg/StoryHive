@@ -1,6 +1,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
@@ -10,35 +11,48 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- $סדר אלמנטים משופר -->
-
-        <!-- תמונת פרופיל ונתוני משתמש בשורה אחת -->
+        <!-- Header section with user info -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="12dp">
 
+            <!-- User initials in circle -->
+            <TextView
+                android:id="@+id/userInitials"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/circle_background"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="JD" />
+
+            <!-- User profile image (alternative to initials) -->
             <ImageView
                 android:id="@+id/profileImage"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_user_placeholder" />
+                android:visibility="gone"
+                tools:src="@drawable/ic_user_placeholder" />
 
             <TextView
                 android:id="@+id/postAuthor"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
                 android:text="Post Author"
-                android:textColor="@color/text_secondary"/>
-          
-          
-            <!-- Edit Button - Will be visible only for post owners -->
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
+
+            <!-- Edit Button -->
             <ImageView
                 android:id="@+id/editButton"
                 android:layout_width="32dp"
@@ -47,62 +61,79 @@
                 android:contentDescription="Edit Post"
                 android:padding="4dp"
                 android:visibility="gone"
-                app:tint="@color/text_secondary"
-                android:textSize="14sp" />
-
+                app:tint="@color/text_secondary" />
         </LinearLayout>
 
-        <!-- כותרת הפוסט - שם הספר -->
-        <TextView
-            android:id="@+id/postTitle"
+        <!-- Book cover image - centered and with proper aspect ratio -->
+        <ImageView
+            android:id="@+id/bookCoverImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginTop="8dp"
-            android:text="Post Title"
-            android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:visibility="gone" />
 
-        <!-- שם הסופר -->
-        <TextView
-            android:id="@+id/bookAuthor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Book Author"
-            android:textColor="@color/text_secondary"
-            android:textSize="16sp" />
-
-        <!-- תיאור הספר -->
-        <TextView
-            android:id="@+id/postContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="This is a sample post content."
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp" />
-
-        <!-- ביקורת המשתמש - מחוץ לכפתורי האינטראקציה -->
-        <TextView
-            android:id="@+id/postReview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Review goes here"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:visibility="visible" />
-
-        <!-- אזור כפתורי אינטראקציה -->
+        <!-- Book info section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- שאר הכפתורים כמו קודם -->
-            <!-- כפתור לייק -->
+            <!-- Book title -->
+            <TextView
+                android:id="@+id/postTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Post Title"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Book author -->
+            <TextView
+                android:id="@+id/bookAuthor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Book Author"
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp" />
+
+            <!-- Book description -->
+            <TextView
+                android:id="@+id/postContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="This is a sample post content."
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+
+            <!-- User review -->
+            <TextView
+                android:id="@+id/postReview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Review goes here"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <!-- Interaction footer -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp">
+
+            <!-- Like button -->
             <ImageView
                 android:id="@+id/likeButton"
                 android:layout_width="wrap_content"
@@ -112,7 +143,7 @@
                 android:src="@drawable/ic_favorite_border"
                 app:tint="@color/text_secondary" />
 
-            <!-- מספר לייקים -->
+            <!-- Like count -->
             <TextView
                 android:id="@+id/likeCount"
                 android:layout_width="wrap_content"
@@ -122,7 +153,7 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
-            <!-- כפתור תגובה -->
+            <!-- Comment button -->
             <ImageView
                 android:id="@+id/commentButton"
                 android:layout_width="32dp"
@@ -133,7 +164,7 @@
                 android:src="@drawable/ic_comment"
                 app:tint="@color/text_secondary" />
 
-            <!-- מספר תגובות -->
+            <!-- Comment count -->
             <TextView
                 android:id="@+id/commentCount"
                 android:layout_width="wrap_content"
@@ -143,26 +174,22 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
+            <!-- Spacer to push delete button to the right -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
-            <!-- כפתור מחיקה (יוצג רק ליוצר הפוסט) -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <ImageButton
+            <!-- Delete button -->
+            <ImageView
                 android:id="@+id/deleteButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:elevation="8dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Delete Post"
                 android:src="@drawable/ic_delete"
                 android:visibility="gone"
-                android:layout_gravity="end"
-                app:tint="@color/black" />
-            </FrameLayout>
+                app:tint="@color/error" />
         </LinearLayout>
-
     </LinearLayout>
 </androidx.cardview.widget.CardView>
