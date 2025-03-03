@@ -311,5 +311,22 @@ class PostRepository {
         }
     }
 
+    // In PostRepository.kt, add this method:
+    fun getPostsByBookId(bookId: String, onPostsUpdated: (List<Post>) -> Unit) {
+        postsCollection
+            .whereEqualTo("bookId", bookId)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+
+                val posts = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(Post::class.java)?.copy(postId = doc.id)
+                } ?: emptyList()
+
+                onPostsUpdated(posts)
+            }
+    }
 
 }

@@ -124,14 +124,14 @@ class EditPostFragment : Fragment() {
         }
 
         // Update button text
-        binding.submitButton.text = "Update Post"
+        binding.publishButton.text = "Update Post"
 
         // Initialize the view model with the post
         viewModel.initWithPost(post)
     }
 
     private fun setupListeners() {
-        binding.bookImageCard.setOnClickListener {
+        binding.imageCard.setOnClickListener {
             // Check and request permissions based on Android version
             if (hasStoragePermission()) {
                 showImageSourceDialog()
@@ -141,7 +141,7 @@ class EditPostFragment : Fragment() {
         }
 
         // Submit post button listener
-        binding.submitButton.setOnClickListener {
+        binding.publishButton.setOnClickListener {
             val title = binding.bookTitleInput.text.toString()
             val author = binding.authorInput.text.toString()
             val review = binding.reviewInput.text.toString()
@@ -308,7 +308,7 @@ class EditPostFragment : Fragment() {
             when (state) {
                 is EditPostUiState.Loading -> {
                     binding.progressBar.isVisible = true
-                    binding.submitButton.isEnabled = false
+                    binding.publishButton.isEnabled = false
                 }
 
                 is EditPostUiState.Success -> {
@@ -318,13 +318,13 @@ class EditPostFragment : Fragment() {
 
                 is EditPostUiState.Error -> {
                     binding.progressBar.isVisible = false
-                    binding.submitButton.isEnabled = true
+                    binding.publishButton.isEnabled = true
                     Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                 }
 
                 is EditPostUiState.Initial -> {
                     binding.progressBar.isVisible = false
-                    binding.submitButton.isEnabled = true
+                    binding.publishButton.isEnabled = true
                 }
             }
         }

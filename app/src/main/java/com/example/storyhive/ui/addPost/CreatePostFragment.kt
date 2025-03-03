@@ -22,6 +22,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.example.storyhive.data.models.Post
 
 
 class CreatePostFragment : Fragment() {
@@ -91,10 +92,26 @@ class CreatePostFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupListeners()
         observeViewModel()
+
+
+        val bookId = arguments?.getString("bookId") ?: ""
+        val bookTitle = arguments?.getString("bookTitle") ?: ""
+        // When pre-filling book info:
+        if (bookId.isNotEmpty()) {
+            binding.bookTitleInput.setText(bookTitle)
+            binding.bookTitleInput.isEnabled = false
+        }
+
+// When creating the post, include the bookId:
+        val post = Post(
+            // your existing fields
+            bookId = bookId,
+            // other fields
+        )
     }
 
     private fun setupListeners() {
-        binding.bookImageCard.setOnClickListener {
+        binding.imageCard.setOnClickListener {
             // Check and request permissions based on Android version
             if (hasStoragePermission()) {
                 showImageSourceDialog()
@@ -104,7 +121,7 @@ class CreatePostFragment : Fragment() {
         }
 
         // Submit post button listener
-        binding.submitButton.setOnClickListener {
+        binding.publishButton.setOnClickListener {
             val title = binding.bookTitleInput.text.toString()
             val author = binding.authorInput.text.toString()
             val review = binding.reviewInput.text.toString()
@@ -270,7 +287,7 @@ class CreatePostFragment : Fragment() {
             when (state) {
                 is CreatePostUiState.Loading -> {
                     binding.progressBar.isVisible = true
-                    binding.submitButton.isEnabled = false
+                    binding.publishButton.isEnabled = false
                 }
 
                 is CreatePostUiState.Success -> {
@@ -280,13 +297,13 @@ class CreatePostFragment : Fragment() {
 
                 is CreatePostUiState.Error -> {
                     binding.progressBar.isVisible = false
-                    binding.submitButton.isEnabled = true
+                    binding.publishButton.isEnabled = true
                     Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                 }
 
                 is CreatePostUiState.Initial -> {
                     binding.progressBar.isVisible = false
-                    binding.submitButton.isEnabled = true
+                    binding.publishButton.isEnabled = true
                 }
             }
         }

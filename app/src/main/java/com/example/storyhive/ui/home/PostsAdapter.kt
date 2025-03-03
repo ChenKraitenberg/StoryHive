@@ -164,9 +164,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                     onEditClickListener?.invoke(post)
                 }
                 
-                // ✅ הצגת כפתור מחיקה רק ליוצר הפוסט
-                val isAuthor = post.userId == currentUserUid
-                deleteButton.visibility = if (isAuthor) View.VISIBLE else View.GONE
+
 
 
                 // Show delete button only for post owner

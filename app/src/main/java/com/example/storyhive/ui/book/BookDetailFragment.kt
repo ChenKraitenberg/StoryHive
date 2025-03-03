@@ -1,31 +1,24 @@
-// File: BookDetailFragment.kt
 package com.example.storyhive.ui.book
 
-import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.storyhive.R
 import com.example.storyhive.databinding.FragmentBookDetailBinding
-import com.example.storyhive.ui.search.ReviewAdapter
-import com.google.firebase.auth.FirebaseAuth
+import com.example.storyhive.data.models.Book
 
 class BookDetailFragment : Fragment() {
-    private val bookDetailViewModel: BookDetailViewModel by viewModels()
-    private val bookRatingViewModel: BookRatingViewModel by viewModels()
-    private val bookReviewViewModel: BookReviewViewModel by viewModels()
-    private val args: BookDetailFragmentArgs by navArgs()
-
     private var _binding: FragmentBookDetailBinding? = null
     private val binding get() = _binding!!
-    private lateinit var reviewAdapter: ReviewAdapter
+
+    private val args: BookDetailFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,77 +29,74 @@ class BookDetailFragment : Fragment() {
         return binding.root
     }
 
-    @SuppressLint("DefaultLocale")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-            // val bookId = arguments?.getString("BOOK_ID") ?: return
-        val selectedBook = args.selectedBook
+        val book = args.selectedBook
 
-        // עכשיו יש לך את כל המידע שכבר חזר מהחיפוש
-        binding.bookTitleTextView.text = selectedBook.title
-        binding.bookAuthorTextView.text = selectedBook.author
-        binding.bookDescriptionTextView.text = selectedBook.description
+        // Display book info
+        displayBookDetails(book)
 
-        // ואם אתה רוצה לטעון את התמונה:
-        Glide.with(requireContext())
-            .load(selectedBook.coverUrl)
-            .placeholder(R.drawable.ic_book_placeholder)
-            .into(binding.bookCoverImage)
+        // Setup action buttons
+        setupActionButtons(book)
+    }
 
-        val reviewAdapter = ReviewAdapter(emptyList())
-        binding.bookReviewsRecyclerView.adapter = reviewAdapter
-        binding.bookReviewsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+    private fun displayBookDetails(book: Book) {
+        binding.apply {
+            bookTitleTextView.text = book.title
+            bookAuthorTextView.text = book.author
+            bookDescriptionTextView.text = book.description
 
-        // טעינת פרטי ספר
-        bookDetailViewModel.loadBookDetails(selectedBook.toString())
-        bookDetailViewModel.bookDetails.observe(viewLifecycleOwner) { bookDetails ->
-            bookDetails?.let {
-                binding.bookTitleTextView.text = it.title // הוסף שורה זו
-                binding.bookAuthorTextView.text = it.author
-                binding.bookDescriptionTextView.text = it.description
-                binding.bookDetailsTextView.text = "${it.publishedDate} | ${it.pageCount} pages"
-
-                // טעינת תמונת כריכה
-                it.coverImageUrl?.let { imageUrl ->
-                    Glide.with(requireContext())
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_book_placeholder)
-                        .into(binding.bookCoverImage)
-                }
+            // Set additional details if available
+            val details = StringBuilder()
+            if (book.publishedDate.isNotEmpty()) {
+                details.append("Published: ${book.publishedDate}")
             }
-        }
-
-        // טעינת דירוגים וביקורות
-        bookRatingViewModel.fetchBookRatings(selectedBook.toString())
-        bookRatingViewModel.bookRatings.observe(viewLifecycleOwner) { ratingData ->
-            binding.apply {
-                bookRatingBar.rating = ratingData.averageRating
-                bookRatingTextView.text = "${String.format("%.1f", ratingData.averageRating)} (${ratingData.totalRatings} ratings)"
-
-                // עדכון רשימת הביקורות
-                reviewAdapter.updateReviews(ratingData.reviews)
+            if (book.pageCount > 0) {
+                if (details.isNotEmpty()) details.append(" • ")
+                details.append("Pages: ${book.pageCount}")
             }
-        }
 
-        // הוספת ביקורת
-        binding.addReviewButton.setOnClickListener {
-            if (FirebaseAuth.getInstance().currentUser != null) {
-                showAddReviewDialog(selectedBook.toString())
-            } else {
-                // הפניה למסך התחברות
-                findNavController().navigate(R.id.action_to_login)
+            bookDetailsChip.text = details.toString()
+
+            // Load book cover
+            if (book.coverUrl.isNotEmpty()) {
+                Glide.with(requireContext())
+                    .load(book.coverUrl)
+                    .placeholder(R.drawable.ic_book_placeholder)
+                    .into(bookCoverImage)
             }
         }
     }
 
-    private fun showAddReviewDialog(bookId: String) {
-        val dialogFragment = AddReviewDialogFragment().apply {
-            arguments = Bundle().apply {
-                putString("BOOK_ID", bookId)
-            }
+    private fun setupActionButtons(book: Book) {
+        // Prepare search query for external links
+        val searchQuery = "${book.title} ${book.author}"
+
+        // Setup Kindle button
+        binding.readOnKindleButton.setOnClickListener {
+            openExternalLink("https://www.amazon.com/kindle-dbs/search?query=${Uri.encode(searchQuery)}")
         }
-        dialogFragment.show(childFragmentManager, "add_review")
+
+        // Setup Audible button
+        binding.listenOnAudibleButton.setOnClickListener {
+            openExternalLink("https://www.audible.com/search?keywords=${Uri.encode(searchQuery)}")
+        }
+
+        // Setup Goodreads button
+        binding.viewOnGoodreadsButton.setOnClickListener {
+            openExternalLink("https://www.goodreads.com/search?q=${Uri.encode(searchQuery)}")
+        }
+    }
+
+    private fun openExternalLink(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        } catch (e: Exception) {
+            // Handle exception (e.g., no browser available)
+            Toast.makeText(context, "Unable to open link", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroyView() {

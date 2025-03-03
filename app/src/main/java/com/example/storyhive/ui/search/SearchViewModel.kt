@@ -1,6 +1,7 @@
 // File: SearchViewModel.kt
 package com.example.storyhive.ui.search
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,11 +35,17 @@ class SearchViewModel : ViewModel() {
                         Book(
                             id = googleBook.id,
                             title = googleBook.volumeInfo.title,
-                            author = googleBook.volumeInfo.authors?.joinToString(", ") ?: "Unknown Author",
+                            author = googleBook.volumeInfo.authors?.joinToString(", ")
+                                ?: "Unknown Author",
                             description = googleBook.volumeInfo.description ?: "",
-                            coverUrl = googleBook.volumeInfo.imageLinks?.thumbnail?.replace("http:", "https:") ?: "",
+                            coverUrl = googleBook.volumeInfo.imageLinks?.thumbnail?.replace(
+                                "http:",
+                                "https:"
+                            ) ?: "",
                             genre = "Unknown",
-                            rating = 0f
+                            rating = 0f,
+                            pageCount = googleBook.volumeInfo.pageCount ?: 0,
+                            publishedDate = googleBook.volumeInfo.publishedDate ?: ""
                         )
                     } catch (e: Exception) {
                         null  // דלג על ספרים עם נתונים חסרים
@@ -49,7 +56,7 @@ class SearchViewModel : ViewModel() {
                 // טיפול בשגיאה
                 _searchResults.value = emptyList()
                 // כדאי להוסיף לוג לשגיאה
-                android.util.Log.e("SearchViewModel", "Error searching books", e)
+                Log.e("SearchViewModel", "Error searching books", e)
             } finally {
                 _isLoading.value = false
             }
