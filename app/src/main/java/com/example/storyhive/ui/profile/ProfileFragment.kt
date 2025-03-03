@@ -89,29 +89,36 @@ class ProfileFragment : Fragment() {
     }
 
 
+    // In ProfileFragment.kt, update the setupProfile method
     private fun setupProfile() {
         val currentUser = FirebaseAuth.getInstance().currentUser
 
         currentUser?.let { user ->
             binding.usernameTextView.text = user.displayName ?: "Unknown"
 
-            // נסה לטעון תמונת פרופיל ונתונים נוספים מפיירסטור
+            // Fetch user data from Firestore
             FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(user.uid)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        // טען את תמונת הפרופיל
+                        // Profile image handling
                         val profileImageBase64 = document.getString("profileImageBase64")
 
-                        // טען את הביו
+                        // Bio handling - properly handle null or empty values
                         val bio = document.getString("bio")
-                        binding.bioTextView.text = bio ?: ""
+                        if (!bio.isNullOrEmpty() && bio != "null") {
+                            binding.bioTextView.text = bio
+                            binding.bioTextView.visibility = View.VISIBLE
+                        } else {
+                            // Hide the bio TextView if there's no valid bio
+                            binding.bioTextView.visibility = View.GONE
+                        }
 
+                        // Profile image display
                         if (!profileImageBase64.isNullOrEmpty()) {
                             try {
-                                // המר את ה-base64 לתמונה והצג אותה
                                 val bitmap = StorageRepository().decodeBase64ToBitmap(profileImageBase64)
                                 binding.profileImageView.setImageBitmap(bitmap)
                             } catch (e: Exception) {
@@ -127,7 +134,7 @@ class ProfileFragment : Fragment() {
                     binding.profileImageView.setImageResource(R.drawable.ic_user_placeholder)
                 }
 
-            loadUserStatistics(user.uid) // טעינת סטטיסטיקות
+            loadUserStatistics(user.uid)
         }
     }
     private fun loadUserStatistics(userId: String) {

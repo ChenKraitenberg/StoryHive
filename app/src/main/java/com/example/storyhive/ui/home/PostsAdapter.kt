@@ -77,15 +77,12 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
 
         fun bind(post: Post) {
             binding.apply {
-                // הצגת שם המשתמש
+                // --- User Information ---
+                // Display username
                 postAuthor.text = post.userDisplayName
 
-                // Check if the current user is the post owner
-                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-                val isPostOwner = currentUserId == post.userId
-
-                // Show or hide edit button based on ownership
-                editButton.visibility = if (isPostOwner) View.VISIBLE else View.GONE
+                // Display profile image
+                setupProfileImage(post.userDisplayName, post.userProfileImage)
 
 
                 // הצגת תמונת פרופיל
@@ -108,9 +105,11 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
 
 
                 // הצגת שם הספר (כותרת)
+                // --- Book Information ---
+                // Display book title
                 postTitle.text = post.bookTitle
 
-                // הצגת שם הסופר
+                // Display author if available
                 if (post.bookAuthor.isNotEmpty()) {
                     bookAuthor.text = post.bookAuthor
                     bookAuthor.visibility = View.VISIBLE
@@ -118,7 +117,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                     bookAuthor.visibility = View.GONE
                 }
 
-                // הצגת תיאור הספר (אם יש)
+                // Display book description if available
                 if (post.bookDescription.isNotEmpty()) {
                     postContent.text = post.bookDescription
                     postContent.visibility = View.VISIBLE
@@ -126,48 +125,39 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                     postContent.visibility = View.GONE
                 }
 
-                // הצגת ביקורת (אם קיימת)
+                // Display review if available
                 if (!post.review.isNullOrEmpty()) {
-                    postReview.text = post.review  // התייחסות ישירה - ללא תוספת "ביקורת:"
+                    postReview.text = post.review
                     postReview.visibility = View.VISIBLE
                 } else {
                     postReview.visibility = View.GONE
                 }
 
-                // שאר הקוד לטיפול בלייקים ותגובות
-                likeCount.text = post.likes.toString()
+                // --- Book Cover Image ---
+                setupBookCoverImage(post)
 
-                // טיפול בסטטוס לייק
-                val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
-                val isLiked = currentUserUid?.let { uid ->
-                    post.likedBy?.contains(uid) ?: false
-                } ?: false
-
-                likeButton.setColorFilter(
-                    ContextCompat.getColor(itemView.context, if (isLiked) R.color.liked else R.color.text_secondary),
-                    android.graphics.PorterDuff.Mode.SRC_IN
-                )
-
-                likeButton.setOnClickListener {
-                    it.animate().scaleX(1.2f).scaleY(1.2f).setDuration(150).withEndAction {
-                        it.animate().scaleX(1f).scaleY(1f).setDuration(150)
-                    }
-                    onLikeClickListener?.invoke(post)
-                }
+                // --- Interaction Controls ---
+                // Setup like button and count
+                setupLikeButton(post)
 
                 // טיפול בתגובות - עדכון ספירת תגובות
                 commentCount.text = post.commentCount.toString()
 
+
+                // Setup comment button
                 commentButton.setOnClickListener {
                     onCommentClickListener?.invoke(post)
                 }
 
-                // Set on edit click listener
+                // --- User Permissions ---
+                val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+                val isPostOwner = currentUserId == post.userId
+
+                // Show edit button only for post owner
+                editButton.visibility = if (isPostOwner) View.VISIBLE else View.GONE
                 editButton.setOnClickListener {
                     onEditClickListener?.invoke(post)
                 }
-
-
 
                 // Set on edit click listener
                 editButton.setOnClickListener {
@@ -178,9 +168,115 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                 val isAuthor = post.userId == currentUserUid
                 deleteButton.visibility = if (isAuthor) View.VISIBLE else View.GONE
 
+
+                // Show delete button only for post owner
+                deleteButton.visibility = if (isPostOwner) View.VISIBLE else View.GONE
                 deleteButton.setOnClickListener {
                     onDeleteClickListener?.invoke(post)
                 }
+            }
+        }
+
+        private fun getInitials(name: String): String {
+            return name.split(" ")
+                .filter { it.isNotEmpty() }
+                .take(2)
+                .joinToString("") { it.first().uppercase() }
+        }
+
+        // Update the setupProfileImage method
+        private fun setupProfileImage(userName: String, userProfile: String?) {
+            // Set user initials in the circular initial view
+            binding.userInitials.text = getInitials(userName)
+
+            if (!userProfile.isNullOrEmpty()) {
+                if (userProfile.startsWith("http")) {
+                    // Load with Glide if it's a URL
+                    Glide.with(itemView.context)
+                        .load(userProfile)
+                        .placeholder(R.drawable.ic_user_placeholder)
+                        .into(binding.profileImage)
+                    binding.profileImage.visibility = View.VISIBLE
+                    binding.userInitials.visibility = View.GONE
+                } else {
+                    // Try to decode as Base64
+                    try {
+                        val bitmap = StorageRepository().decodeBase64ToBitmap(userProfile)
+                        binding.profileImage.setImageBitmap(bitmap)
+                        binding.profileImage.visibility = View.VISIBLE
+                        binding.userInitials.visibility = View.GONE
+                    } catch (e: Exception) {
+                        Log.e("PostsAdapter", "Failed to decode profile image", e)
+                        binding.profileImage.visibility = View.GONE
+                        binding.userInitials.visibility = View.VISIBLE
+                    }
+                }
+            } else {
+                binding.profileImage.visibility = View.GONE
+                binding.userInitials.visibility = View.VISIBLE
+            }
+        }
+
+        // Helper method to handle book cover image display
+        private fun setupBookCoverImage(post: Post) {
+            // Check if we have Base64 image data
+            if (!post.imageBase64.isNullOrEmpty()) {
+                try {
+                    // Display Base64 image
+                    val bitmap = StorageRepository().decodeBase64ToBitmap(post.imageBase64!!)
+                    binding.bookCoverImage.setImageBitmap(bitmap)
+                    binding.bookCoverImage.visibility = View.VISIBLE
+                } catch (e: Exception) {
+                    Log.e("PostsAdapter", "Failed to decode post image", e)
+                    checkForImageUrl(post)
+                }
+            } else {
+                // If no Base64 data, check for image URL
+                checkForImageUrl(post)
+            }
+        }
+
+        // Helper method to check for image URL
+        private fun checkForImageUrl(post: Post) {
+            if (!post.imageUrl.isNullOrEmpty()) {
+                // Display image from URL
+                Glide.with(itemView.context)
+                    .load(post.imageUrl)
+                    .placeholder(R.drawable.ic_book_placeholder)
+                    .into(binding.bookCoverImage)
+                binding.bookCoverImage.visibility = View.VISIBLE
+            } else {
+                // No image available
+                binding.bookCoverImage.visibility = View.GONE
+            }
+        }
+
+        // Helper method to handle like button setup
+        @SuppressLint("SetTextI18n")
+        private fun setupLikeButton(post: Post) {
+            // Update like count
+            binding.likeCount.text = post.likes.toString()
+
+            // Set like button color based on whether user has liked the post
+            val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+            val isLiked = currentUserUid?.let { uid ->
+                post.likedBy?.contains(uid) ?: false
+            } ?: false
+
+            binding.likeButton.setColorFilter(
+                ContextCompat.getColor(
+                    itemView.context,
+                    if (isLiked) R.color.liked else R.color.text_secondary
+                ),
+                android.graphics.PorterDuff.Mode.SRC_IN
+            )
+
+            // Setup like button click animation and listener
+            binding.likeButton.setOnClickListener {
+                it.animate().scaleX(1.2f).scaleY(1.2f).setDuration(150).withEndAction {
+                    it.animate().scaleX(1f).scaleY(1f).setDuration(150)
+                }
+                onLikeClickListener?.invoke(post)
             }
         }
     }

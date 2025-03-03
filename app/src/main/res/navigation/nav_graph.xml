@@ -79,19 +79,20 @@
         <action
             android:id="@+id/action_search_to_bookDetail"
             app:destination="@id/bookDetailFragment">
-            <argument
-                android:name="bookId"
-                app:argType="string" />
+<!--            <argument-->
+<!--                android:name="bookId"-->
+<!--                app:argType="string" />-->
         </action>
     </fragment>
 
     <fragment
         android:id="@+id/bookDetailFragment"
         android:name="com.example.storyhive.ui.book.BookDetailFragment"
-        android:label="Book Details">
+        android:label="BookDetailFragment">
         <argument
-            android:name="bookId"
-            app:argType="string" />
+            android:name="selectedBook"
+            app:argType="com.example.storyhive.data.models.Book" />
+
         <action
             android:id="@+id/action_to_login"
             app:destination="@id/loginFragment"/>
