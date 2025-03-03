@@ -84,6 +84,27 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                 // Display profile image
                 setupProfileImage(post.userDisplayName, post.userProfileImage)
 
+
+                // הצגת תמונת פרופיל
+                if (post.userProfileImage.isNotEmpty()) {
+                    try {
+                        // נסה להמיר את ה-base64 string לbitmap
+                        val bitmap = StorageRepository().decodeBase64ToBitmap(post.userProfileImage)
+                        binding.profileImage.setImageBitmap(bitmap)
+                    } catch (e: Exception) {
+                        Log.e("PostsAdapter", "Failed to decode user profile image", e)
+                        binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
+                    }
+                } else {
+                    binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
+                }
+                Glide.with(itemView.context)
+                    .load(post.userProfileImage)
+                    .placeholder(R.drawable.ic_user_placeholder)
+                    .into(binding.profileImage)
+
+
+                // הצגת שם הספר (כותרת)
                 // --- Book Information ---
                 // Display book title
                 postTitle.text = post.bookTitle
@@ -119,6 +140,10 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                 // Setup like button and count
                 setupLikeButton(post)
 
+                // טיפול בתגובות - עדכון ספירת תגובות
+                commentCount.text = post.commentCount.toString()
+
+
                 // Setup comment button
                 commentButton.setOnClickListener {
                     onCommentClickListener?.invoke(post)
@@ -133,6 +158,16 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                 editButton.setOnClickListener {
                     onEditClickListener?.invoke(post)
                 }
+
+                // Set on edit click listener
+                editButton.setOnClickListener {
+                    onEditClickListener?.invoke(post)
+                }
+                
+                // ✅ הצגת כפתור מחיקה רק ליוצר הפוסט
+                val isAuthor = post.userId == currentUserUid
+                deleteButton.visibility = if (isAuthor) View.VISIBLE else View.GONE
+
 
                 // Show delete button only for post owner
                 deleteButton.visibility = if (isPostOwner) View.VISIBLE else View.GONE

@@ -51,20 +51,26 @@
     <action
         android:id="@+id/action_home_to_editPost"
         app:destination="@id/editPostFragment" />
+
+    <action
+        android:id="@+id/action_home_to_comments"
+        app:destination="@id/commentsFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.storyhive.ui.profile.ProfileFragment"
-        android:label="Profile" />
-
+        android:label="Profile" >
     <action
         android:id="@+id/action_profile_to_editPost"
         app:destination="@id/editPostFragment" />
-
     <action
         android:id="@+id/action_profileFragment_to_loginFragment"
         app:destination="@id/loginFragment" />
+    <action
+        android:id="@+id/action_profile_to_comments"
+        app:destination="@id/commentsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/searchFragment"
@@ -111,6 +117,19 @@
         <argument
             android:name="post"
             app:argType="com.example.storyhive.data.models.Post" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/commentsFragment"
+        android:name="com.example.storyhive.ui.comment.CommentsFragment"
+        android:label="Comments">
+        <argument
+            android:name="postId"
+            app:argType="string" />
+        <argument
+            android:name="postTitle"
+            app:argType="string" />
     </fragment>
 
 </navigation>

@@ -10,10 +10,12 @@ import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 import com.example.storyhive.data.models.Comment
 import com.example.storyhive.data.models.UserPostsStats
+import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class PostRepository {
     private val firestore = FirebaseFirestore.getInstance()
@@ -84,57 +86,6 @@ class PostRepository {
         }
     }
 
-    // הוספת תגובה
-    suspend fun addComment(postId: String, content: String) {
-        val userId = auth.currentUser?.uid ?: return
-        val userName = auth.currentUser?.displayName ?: "Anonymous"
-
-        val comment = Comment(
-            userId = userId,
-            userName = userName,
-            content = content,
-            timestamp = System.currentTimeMillis()
-        )
-
-        postsCollection
-            .document(postId)
-            .collection("comments")
-            .add(comment)
-    }
-
-    // הבאת תגובות לפוסט
-    fun observeComments(postId: String, onCommentsUpdated: (List<Comment>) -> Unit) {
-        postsCollection
-            .document(postId)
-            .collection("comments")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    return@addSnapshotListener
-                }
-
-                val comments = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(Comment::class.java)
-                } ?: emptyList()
-
-                onCommentsUpdated(comments)
-            }
-    }
-
-    // יצירת פוסט חדש
-//    suspend fun createPost(post: Post) {
-//        val user = FirebaseAuth.getInstance().currentUser
-//        if (user != null) {
-//            val newPostRef = postsCollection.document()
-//            val postWithUserInfo = post.copy(
-//                postId = newPostRef.id,
-//                userId = user.uid,
-//                userDisplayName = user.displayName ?: "Unknown",  // הוספת שם המשתמש
-//                timestamp = System.currentTimeMillis()
-//            )
-//            newPostRef.set(postWithUserInfo).await()
-//        }
-//    }
 
     suspend fun createPost(post: Post) {
         val user = FirebaseAuth.getInstance().currentUser
@@ -171,6 +122,8 @@ class PostRepository {
             }
         }
     }
+
+
      fun likePost(postId: String) {
         val userId = auth.currentUser?.uid ?: return
         val postRef = postsCollection.document(postId)
@@ -218,7 +171,145 @@ class PostRepository {
     }
 
 
+    suspend fun addComment(postId: String, content: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val userId = auth.currentUser?.uid
+                    ?: throw Exception("User not logged in")
+                val userName = auth.currentUser?.displayName ?: "Anonymous"
 
+                // יצירת מזהה ייחודי לתגובה
+                val commentId = UUID.randomUUID().toString()
+
+                val comment = Comment(
+                    commentId = commentId,
+                    userId = userId,
+                    userName = userName,
+                    content = content,
+                    timestamp = System.currentTimeMillis()
+                )
+
+                // שלב 1: שמירת התגובה
+                postsCollection
+                    .document(postId)
+                    .collection("comments")
+                    .document(commentId)
+                    .set(comment)
+                    .await()
+
+                Log.d("PostRepository", "Comment saved with ID: $commentId")
+
+                // שלב 2: עדכון מספר התגובות בפוסט
+                updateCommentCount(postId)
+
+                Log.d("PostRepository", "Comment count updated for post $postId")
+            } catch (e: Exception) {
+                Log.e("PostRepository", "Error adding comment: ${e.message}", e)
+                throw e
+            }
+        }
+    }
+
+    suspend fun deleteComment(postId: String, commentId: String): Boolean {
+        return try {
+            // First check if the current user is the comment creator
+            val userId = auth.currentUser?.uid ?: return false
+            val commentDoc = postsCollection
+                .document(postId)
+                .collection("comments")
+                .document(commentId)
+                .get()
+                .await()
+
+            val comment = commentDoc.toObject(Comment::class.java)
+
+            // Only allow deletion if the user created the comment
+            if (comment?.userId == userId) {
+                postsCollection
+                    .document(postId)
+                    .collection("comments")
+                    .document(commentId)
+                    .delete()
+                    .await()
+
+                // Update comment count
+                updateCommentCount(postId)
+                return true
+            } else {
+                return false
+            }
+        } catch (e: Exception) {
+            Log.e("PostRepository", "Error deleting comment: ${e.message}")
+            return false
+        }
+    }
+
+    // עדכון מספר התגובות בפוסט
+    private suspend fun updateCommentCount(postId: String) {
+        try {
+            // Get the snapshot of comments collection
+            val commentsSnapshot = postsCollection
+                .document(postId)
+                .collection("comments")
+                .get()
+                .await()
+
+            // Count the documents in the snapshot
+            val commentCount = commentsSnapshot.size()
+
+            // Update the post document with the new count
+            postsCollection
+                .document(postId)
+                .update("commentCount", commentCount)
+                .await()
+
+            Log.d("PostRepository", "Updated comment count for post $postId: $commentCount")
+        } catch (e: Exception) {
+            Log.e("PostRepository", "Error updating comment count: ${e.message}")
+            throw e
+        }
+    }
+
+// הבאת תגובות לפוסט
+    fun observeComments(postId: String, onCommentsUpdated: (List<Comment>) -> Unit) {
+        postsCollection
+            .document(postId)
+            .collection("comments")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("PostRepository", "Error observing comments: ${error.message}")
+                    return@addSnapshotListener
+                }
+
+                val comments = snapshot?.documents?.mapNotNull { doc ->
+                    val comment = doc.toObject(Comment::class.java)
+                    // If the comment doesn't have an ID (old data), use the document ID
+                    comment?.copy(commentId = comment.commentId.ifEmpty { doc.id })
+                } ?: emptyList()
+
+                // Deliver on main thread to ensure UI safety
+                Handler(Looper.getMainLooper()).post {
+                    onCommentsUpdated(comments)
+                }
+            }
+    }
+
+    // Get comment count for a post
+    suspend fun getCommentCount(postId: String): Long {
+        return try {
+            val commentsSnapshot = postsCollection
+                .document(postId)
+                .collection("comments")
+                .get()
+                .await()
+
+            commentsSnapshot.size().toLong()
+        } catch (e: Exception) {
+            Log.e("PostRepository", "Error getting comment count: ${e.message}")
+            0L
+        }
+    }
 
 
 }

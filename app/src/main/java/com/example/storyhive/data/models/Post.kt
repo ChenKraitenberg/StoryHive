@@ -36,6 +36,7 @@ data class Post(
     val review: String = "",
     val likes: Int = 0,
     val likedBy: List<String> = emptyList(),
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val commentCount: Int = 0
 ) : Parcelable
 
