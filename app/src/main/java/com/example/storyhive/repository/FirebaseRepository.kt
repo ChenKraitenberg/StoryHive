@@ -2,6 +2,7 @@ package com.example.storyhive.repository
 
 import android.net.Uri
 import android.util.Log
+import com.example.storyhive.data.models.Comment
 import com.example.storyhive.data.models.Post
 import com.example.storyhive.data.models.User
 import com.google.firebase.auth.FirebaseAuth
@@ -167,5 +168,51 @@ object FirebaseRepository {
             .addOnFailureListener {
                 onResult(false, null)
             }
+    }
+
+
+    fun addComment(postId: String, comment: Comment, onResult: (Boolean) -> Unit) {
+        try {
+            val commentRef = firestore.collection("posts")
+                .document(postId)
+                .collection("comments")
+                .document()
+
+            val commentWithId = comment.copy(commentId = commentRef.id)
+
+            firestore.runTransaction { transaction ->
+                // הוספת התגובה
+                transaction.set(commentRef, commentWithId)
+
+                // עדכון ספירת תגובות בפוסט
+                val postRef = firestore.collection("posts").document(postId)
+                val snapshot = transaction.get(postRef)
+                val currentCount = snapshot.getLong("commentCount") ?: 0
+                transaction.update(postRef, "commentCount", currentCount + 1)
+            }.addOnSuccessListener {
+                Log.d("FirebaseRepository", "Comment added successfully to post $postId")
+                onResult(true)
+            }.addOnFailureListener { e ->
+                Log.e("FirebaseRepository", "Failed to add comment to post $postId", e)
+                onResult(false)
+            }
+        } catch (e: Exception) {
+            Log.e("FirebaseRepository", "Exception adding comment", e)
+            onResult(false)
+        }
+    }
+
+    private fun updateCommentCount(postId: String, onResult: (Boolean) -> Unit) {
+        val postRef = firestore.collection("posts").document(postId)
+
+        firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(postRef)
+            val currentCount = snapshot.getLong("commentCount") ?: 0
+            transaction.update(postRef, "commentCount", currentCount + 1)
+        }.addOnSuccessListener {
+            onResult(true)
+        }.addOnFailureListener {
+            onResult(false)
+        }
     }
 }

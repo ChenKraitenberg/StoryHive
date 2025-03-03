@@ -16,6 +16,7 @@ import com.example.storyhive.data.models.UserPostsStats
 import com.example.storyhive.databinding.FragmentProfileBinding
 import com.example.storyhive.ui.home.PostsAdapter
 import com.example.storyhive.repository.PostRepository
+import com.example.storyhive.ui.comment.CommentDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
@@ -56,20 +57,26 @@ class ProfileFragment : Fragment() {
             setOnDeleteClickListener { post ->  // ✅ ודא שהמאזין מחובר
                 viewModel.deletePost(post.postId) // ✅ הפעלת המחיקה דרך ה-ViewModel
             }
-        }
 
-        binding.postsRecyclerView.apply {
-            adapter = postsAdapter
-            layoutManager = LinearLayoutManager(requireContext())
+        // הוספת מאזין ללחיצה על כפתור תגובות
+        setOnCommentClickListener { post ->
+            CommentDialogFragment.newInstance(post.postId)
+                .show(childFragmentManager, "comment_dialog")
         }
 
         // Add edit click listener
-        postsAdapter.setOnEditClickListener { post ->
+        setOnEditClickListener { post ->
             findNavController().navigate(
                 ProfileFragmentDirections.actionProfileToEditPost(post)
             )
         }
     }
+
+    binding.postsRecyclerView.apply {
+        adapter = postsAdapter
+        layoutManager = LinearLayoutManager(requireContext())
+    }
+}
 
     private fun setupObservers() {
         viewModel.deleteStatus.observe(viewLifecycleOwner) { success ->

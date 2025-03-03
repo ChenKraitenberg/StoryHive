@@ -89,13 +89,6 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
 
 
                 // הצגת תמונת פרופיל
-//                if (post.userProfileImage.isNotEmpty()) {
-//                    Picasso.get().load(post.userProfileImage).placeholder(R.drawable.ic_user_placeholder).into(profileImage)
-//                } else {
-//                    profileImage.setImageResource(R.drawable.ic_user_placeholder)
-//                }
-                // הצגת תמונת פרופיל
-// הצגת תמונת פרופיל - שנה את הקוד הקיים
                 if (post.userProfileImage.isNotEmpty()) {
                     try {
                         // נסה להמיר את ה-base64 string לbitmap
@@ -162,9 +155,19 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                     onLikeClickListener?.invoke(post)
                 }
 
+                // טיפול בתגובות - עדכון ספירת תגובות
+                commentCount.text = post.commentCount.toString()
+
                 commentButton.setOnClickListener {
                     onCommentClickListener?.invoke(post)
                 }
+
+                // Set on edit click listener
+                editButton.setOnClickListener {
+                    onEditClickListener?.invoke(post)
+                }
+
+
 
                 // Set on edit click listener
                 editButton.setOnClickListener {

@@ -11,7 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyhive.databinding.FragmentHomeBinding
 import androidx.navigation.fragment.findNavController
-import com.example.storyhive.ui.home.HomeViewModel
+import com.example.storyhive.ui.comment.CommentDialogFragment
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -39,12 +39,9 @@ class HomeFragment : Fragment() {
             setOnLikeClickListener { post ->
                 viewModel.likePost(post.postId)
             }
-            setOnCommentClickListener { post ->
-                // TODO: פתיחת מסך תגובות
-                Toast.makeText(requireContext(), "Opening comments for ${post.bookTitle}", Toast.LENGTH_SHORT).show()
-            }
 
-            // Add this block for edit click listener
+
+            //edit click listener
             setOnEditClickListener { post ->
                 // Navigate to edit post screen with the post as argument
                 findNavController().navigate(
@@ -54,6 +51,16 @@ class HomeFragment : Fragment() {
 
             setOnDeleteClickListener { post ->  // ✅ הוספת מחיקת פוסט
                 viewModel.deletePost(post.postId)
+            }
+
+            setOnCommentClickListener { post ->
+                // Create and show the comment dialog with proper callback
+                val dialog = CommentDialogFragment.newInstance(post.postId)
+                dialog.setOnCommentAddedListener {
+                    // This will be called when comment is successfully added
+                    viewModel.refreshPosts()
+                }
+                dialog.show(childFragmentManager, "comment_dialog")
             }
         }
 
