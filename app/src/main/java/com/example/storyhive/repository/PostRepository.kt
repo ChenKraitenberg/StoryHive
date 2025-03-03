@@ -185,9 +185,14 @@ class PostRepository {
                     commentId = commentId,
                     userId = userId,
                     userName = userName,
-                    content = content,
+                    content = content.trim(),
                     timestamp = System.currentTimeMillis()
                 )
+
+                // בדיקת תקינות תוכן התגובה
+                if (content.trim().isEmpty()) {
+                    throw IllegalArgumentException("Comment cannot be empty")
+                }
 
                 // שלב 1: שמירת התגובה
                 postsCollection

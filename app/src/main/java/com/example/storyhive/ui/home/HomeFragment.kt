@@ -1,6 +1,7 @@
 package com.example.storyhive.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,6 +62,24 @@ class HomeFragment : Fragment() {
                     viewModel.refreshPosts()
                 }
                 dialog.show(childFragmentManager, "comment_dialog")
+            }
+
+            setOnCommentCountClickListener { post ->
+                try {
+                    // מעבר למסך התגובות עם ה-ID של הפוסט וכותרת הפוסט
+                    val action = HomeFragmentDirections.actionHomeToComments(
+                        postId = post.postId,
+                        postTitle = post.bookTitle
+                    )
+                    if (isAdded && !isDetached) {
+                        findNavController().navigate(action)
+                    }
+                } catch (e: Exception) {
+                    Log.e("HomeFragment", "Error navigating to comments: ${e.message}", e)
+                    context?.let {
+                        Toast.makeText(it, "שגיאה בטעינת מסך התגובות", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
 
