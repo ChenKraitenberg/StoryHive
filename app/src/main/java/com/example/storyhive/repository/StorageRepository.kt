@@ -8,9 +8,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.IOException

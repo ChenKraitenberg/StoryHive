@@ -69,10 +69,10 @@ class LoginFragment : Fragment() {
                 }
 
                 is AuthState.Loading -> {
-                    // הציגי Spinner אם תרצי, או השאירי ריק
+
                 }
                 else -> {
-                    // כל מצב אחר שלא נתמך
+
                 }
 
             }

@@ -94,7 +94,7 @@
             app:argType="com.example.storyhive.data.models.Book" />
 
         <action
-            android:id="@+id/action_to_login"
+            android:id="@+id/action_bookDetail_to_createPost"
             app:destination="@id/loginFragment"/>
     </fragment>
 

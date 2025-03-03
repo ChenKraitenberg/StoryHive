@@ -11,13 +11,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.storyhive.data.models.Post
 import com.example.storyhive.repository.FirebaseRepository
 import com.example.storyhive.repository.PostRepository
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.net.URLEncoder
 import kotlin.coroutines.resume
 
 class CreatePostViewModel : ViewModel() {
