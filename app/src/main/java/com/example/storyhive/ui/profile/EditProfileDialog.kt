@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.net.URLEncoder
 
 class EditProfileDialog : DialogFragment() {
     private var _binding: DialogEditProfileBinding? = null
@@ -48,12 +49,28 @@ class EditProfileDialog : DialogFragment() {
     }
 
     // טוען את נתוני המשתמש הנוכחי
+// In EditProfileDialog.kt, update the setupCurrentUserData method
     private fun setupCurrentUserData() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.let { user ->
             binding.displayNameEditText.setText(user.displayName)
-            binding.bioEditText.setText(user.photoUrl.toString())
 
+            // Get user data from Firestore to fill bio field properly
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(user.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    val bio = document.getString("bio")
+                    // Only set bio text if it's not null or "null" string
+                    if (!bio.isNullOrEmpty() && bio != "null") {
+                        binding.bioEditText.setText(bio)
+                    } else {
+                        binding.bioEditText.setText("")  // Empty string, not "null"
+                    }
+                }
+
+            // Load profile image
             Picasso.get()
                 .load(user.photoUrl)
                 .placeholder(R.drawable.baseline_image_24)
@@ -70,12 +87,13 @@ class EditProfileDialog : DialogFragment() {
     }
 
     // עדכון הפרופיל
+// Update the updateProfile method in EditProfileDialog.kt
     private fun updateProfile() {
         val newName = binding.displayNameEditText.text.toString()
-        val newBio = binding.bioEditText.text.toString()
+        val newBio = binding.bioEditText.text.toString() // Ensure this isn't "null" text
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        // הצג מחוון טעינה
+        // Show loading indicator
         binding.progressBar.visibility = View.VISIBLE
         binding.saveButton.isEnabled = false
 
@@ -83,32 +101,43 @@ class EditProfileDialog : DialogFragment() {
             try {
                 val userUpdates = HashMap<String, Any>()
 
-                if (newBio.isNotEmpty()) {
+                // Only add bio if it's not empty
+                if (newBio.isNotEmpty() && newBio != "null") {
                     userUpdates["bio"] = newBio
                 }
 
-                // עדכון שם המשתמש
+                // Update username
                 val profileUpdates = UserProfileChangeRequest.Builder()
                     .setDisplayName(newName)
                     .build()
 
                 FirebaseAuth.getInstance().currentUser?.updateProfile(profileUpdates)?.await()
 
-                // שמירת תמונת הפרופיל
+                // Handle profile image
                 selectedImageUri?.let { uri ->
                     try {
-                        val imageUrl = storageRepository.uploadImage(requireContext(), uri, "profile_images/$userId")
-                        userUpdates["profileImage"] = imageUrl
+                        // Upload to Firestore as Base64
+                        val imageBase64 = storageRepository.uploadImage(requireContext(), uri, "profile_images")
+
+                        // Store Base64 image in Firestore
+                        userUpdates["profileImageBase64"] = imageBase64
+
+                        // DO NOT try to set this as the photoUri in Firebase Auth
+                        // Instead, use a placeholder or actual URL for Auth profile photo
+                        val placeholderUrl = "https://ui-avatars.com/api/?name=" +
+                                URLEncoder.encode(newName, "UTF-8") + "&background=random&size=100"
 
                         FirebaseAuth.getInstance().currentUser?.updateProfile(
-                            UserProfileChangeRequest.Builder().setPhotoUri(Uri.parse(imageUrl)).build()
+                            UserProfileChangeRequest.Builder()
+                                .setPhotoUri(Uri.parse(placeholderUrl))
+                                .build()
                         )?.await()
                     } catch (e: Exception) {
                         Log.e("EditProfileDialog", "Failed to upload image", e)
                     }
                 }
 
-                // עדכון Firestore
+                // Update Firestore
                 if (userUpdates.isNotEmpty()) {
                     FirebaseFirestore.getInstance()
                         .collection("users")
