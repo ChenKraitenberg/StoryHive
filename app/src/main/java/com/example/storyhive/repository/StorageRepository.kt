@@ -77,23 +77,42 @@ class StorageRepository {
     }
 
 // בדיקת תקינות לפני פענוח Base64
-fun decodeBase64ToBitmap(base64String: String): Bitmap? {
+fun decodeBase64ToBitmap(base64String: String?): Bitmap? {
+    if (base64String.isNullOrBlank()) {
+        Log.e("StorageRepository", "Empty or null base64 string")
+        return null
+    }
+
     return try {
-        // וידוא שהמחרוזת תקינה לפני פענוח
-        if (base64String.isEmpty()) {
-            Log.e("StorageRepository", "Empty base64 string")
+        // נקה את המחרוזת מרווחים ותווים לא רצויים
+        val cleanedBase64 = base64String.trim()
+            .replace("\n", "")
+            .replace("\r", "")
+            .replace(" ", "")
+
+        // בדוק אורך מינימלי של Base64
+        if (cleanedBase64.length < 10) {
+            Log.e("StorageRepository", "Base64 string is too short")
             return null
         }
 
-        // ניסיון לפענח רק אם המחרוזת נראית חוקית
-        val cleanedBase64 = base64String.trim()
-        val decodedBytes = Base64.decode(cleanedBase64, Base64.DEFAULT)
+        // הסר תחילית אם קיימת
+        val base64Cleaned = cleanedBase64.replace("data:image/.*;base64,", "")
+
+        val decodedBytes = Base64.decode(base64Cleaned, Base64.DEFAULT)
+
+        // בדוק אורך בתים
+        if (decodedBytes.isEmpty()) {
+            Log.e("StorageRepository", "Decoded bytes are empty")
+            return null
+        }
+
         BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
     } catch (e: IllegalArgumentException) {
-        Log.e("StorageRepository", "Failed to decode Base64", e)
+        Log.e("StorageRepository", "Invalid Base64 decoding: ${e.message}")
         null
     } catch (e: Exception) {
-        Log.e("StorageRepository", "Error creating bitmap from Base64", e)
+        Log.e("StorageRepository", "Error creating bitmap: ${e.message}")
         null
     }
 }

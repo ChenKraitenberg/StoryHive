@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -70,6 +71,25 @@ class ProfileFragment : Fragment() {
                 ProfileFragmentDirections.actionProfileToEditPost(post)
             )
         }
+
+
+
+        setOnCommentCountClickListener { post ->
+            try {
+                val action = ProfileFragmentDirections.actionProfileToComments(
+                    postId = post.postId,
+                    postTitle = post.bookTitle
+                )
+                if (isAdded && !isDetached) {
+                    findNavController().navigate(action)
+                }
+            } catch (e: Exception) {
+                Log.e("ProfileFragment", "Error navigating to comments: ${e.message}", e)
+                context?.let {
+                    Toast.makeText(it, "שגיאה בטעינת מסך התגובות", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     binding.postsRecyclerView.apply {
@@ -87,7 +107,6 @@ class ProfileFragment : Fragment() {
             }
         }
     }
-
 
     // In ProfileFragment.kt, update the setupProfile method
     private fun setupProfile() {
