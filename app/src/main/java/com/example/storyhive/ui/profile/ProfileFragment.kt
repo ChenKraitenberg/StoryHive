@@ -108,7 +108,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-
     // In ProfileFragment.kt, update the setupProfile method
     private fun setupProfile() {
         val currentUser = FirebaseAuth.getInstance().currentUser
