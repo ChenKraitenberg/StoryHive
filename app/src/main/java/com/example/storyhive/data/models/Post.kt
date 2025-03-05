@@ -23,3 +23,23 @@ data class Post(
     val commentCount: Int = 0
 ) : Parcelable
 
+{
+    // הוסף המרה לMap עבור Firestore
+    fun toMap(): Map<String, Any?> = mapOf(
+        "postId" to postId,
+        "userId" to userId,
+        "userDisplayName" to userDisplayName,
+        "userProfileImage" to userProfileImage,
+        "bookTitle" to bookTitle,
+        "bookAuthor" to bookAuthor,
+        "bookDescription" to bookDescription,
+        "review" to review,
+        "imageBase64" to imageBase64,
+        "imageUrl" to imageUrl,
+        "timestamp" to timestamp,
+        "likes" to likes,
+        "likedBy" to likedBy,
+        "commentCount" to commentCount
+    )
+}
+

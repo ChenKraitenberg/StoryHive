@@ -27,6 +27,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
     private var onCommentClickListener: ((Post) -> Unit)? = null
     private var onEditClickListener: ((Post) -> Unit)? = null
     private var onDeleteClickListener: ((Post) -> Unit)? = null
+    private var onCommentCountClickListener: ((Post) -> Unit)? = null
 
 
     fun setOnLikeClickListener(listener: (Post) -> Unit) {
@@ -44,6 +45,11 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
     fun setOnDeleteClickListener(listener: (Post) -> Unit) {
         onDeleteClickListener = listener
     }
+
+    fun setOnCommentCountClickListener(listener: (Post) -> Unit) {
+        onCommentCountClickListener = listener
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = ItemPostBinding.inflate(
@@ -149,6 +155,17 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                     onCommentClickListener?.invoke(post)
                 }
 
+
+                //bind listener for click on comments count
+                binding.commentCount.setOnClickListener {
+                    try {
+                        onCommentCountClickListener?.invoke(post)
+                    } catch (e: Exception) {
+                        Log.e("PostsAdapter", "Error on comment count click", e)
+                    }
+                }
+
+
                 // --- User Permissions ---
                 val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
                 val isPostOwner = currentUserId == post.userId
@@ -184,34 +201,43 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
 
         // Update the setupProfileImage method
         private fun setupProfileImage(userName: String, userProfile: String?) {
-            // Set user initials in the circular initial view
+            // הגדר תמיד אותיות ראשונות
             binding.userInitials.text = getInitials(userName)
 
-            if (!userProfile.isNullOrEmpty()) {
-                if (userProfile.startsWith("http")) {
-                    // Load with Glide if it's a URL
+            // נקה ובדוק תמונה
+            val cleanProfileImage = userProfile?.trim()
+
+            when {
+                // אם יש כתובת URL תקינה
+                !cleanProfileImage.isNullOrEmpty() && cleanProfileImage.startsWith("http") -> {
                     Glide.with(itemView.context)
-                        .load(userProfile)
+                        .load(cleanProfileImage)
                         .placeholder(R.drawable.ic_user_placeholder)
+                        .error(R.drawable.ic_user_placeholder)
                         .into(binding.profileImage)
                     binding.profileImage.visibility = View.VISIBLE
                     binding.userInitials.visibility = View.GONE
-                } else {
-                    // Try to decode as Base64
-                    try {
-                        val bitmap = StorageRepository().decodeBase64ToBitmap(userProfile)
+                }
+
+                // נסה להמיר Base64
+                !cleanProfileImage.isNullOrEmpty() -> {
+                    val bitmap = StorageRepository().decodeBase64ToBitmap(cleanProfileImage)
+                    if (bitmap != null) {
                         binding.profileImage.setImageBitmap(bitmap)
                         binding.profileImage.visibility = View.VISIBLE
                         binding.userInitials.visibility = View.GONE
-                    } catch (e: Exception) {
-                        Log.e("PostsAdapter", "Failed to decode profile image", e)
+                    } else {
+                        // אם ההמרה נכשלה, הראה אותיות ראשונות
                         binding.profileImage.visibility = View.GONE
                         binding.userInitials.visibility = View.VISIBLE
                     }
                 }
-            } else {
-                binding.profileImage.visibility = View.GONE
-                binding.userInitials.visibility = View.VISIBLE
+
+                // אחרת, הראה אותיות ראשונות
+                else -> {
+                    binding.profileImage.visibility = View.GONE
+                    binding.userInitials.visibility = View.VISIBLE
+                }
             }
         }
 
