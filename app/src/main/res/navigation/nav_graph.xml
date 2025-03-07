@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/welcomeFragment">
+
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.example.storyhive.ui.auth.WelcomeFragment"
+        android:label="">
+        <action
+            android:id="@+id/action_welcome_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_welcome_to_signUp"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.storyhive.ui.auth.LoginFragment"
+        android:label="sign in">
+        <action
+            android:id="@+id/action_loginFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_login_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.storyhive.ui.auth.SignUpFragment"
+        android:label="sign up">
+        <action
+            android:id="@+id/action_signUpFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_signUp_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.storyhive.ui.home.HomeFragment"
+        android:label="דף הבית" >
+    <action
+        android:id="@+id/action_home_to_editPost"
+        app:destination="@id/editPostFragment" />
+
+    <action
+        android:id="@+id/action_home_to_comments"
+        app:destination="@id/commentsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.storyhive.ui.profile.ProfileFragment"
+        android:label="Profile" >
+    <action
+        android:id="@+id/action_profile_to_editPost"
+        app:destination="@id/editPostFragment" />
+    <action
+        android:id="@+id/action_profileFragment_to_loginFragment"
+        app:destination="@id/loginFragment" />
+    <action
+        android:id="@+id/action_profile_to_comments"
+        app:destination="@id/commentsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.storyhive.ui.search.SearchFragment"
+        android:label="Search">
+        <action
+            android:id="@+id/action_search_to_bookDetail"
+            app:destination="@id/bookDetailFragment">
+<!--            <argument-->
+<!--                android:name="bookId"-->
+<!--                app:argType="string" />-->
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookDetailFragment"
+        android:name="com.example.storyhive.ui.book.BookDetailFragment"
+        android:label="BookDetailFragment">
+        <argument
+            android:name="selectedBook"
+            app:argType="com.example.storyhive.data.models.Book" />
+
+        <action
+            android:id="@+id/action_bookDetail_to_createPost"
+            app:destination="@id/loginFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/createPostFragment"
+        android:name="com.example.storyhive.ui.addPost.CreatePostFragment"
+        android:label="Create Post">
+        <action
+            android:id="@+id/action_createPost_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/editPostFragment"
+        android:name="com.example.storyhive.ui.addPost.EditPostFragment"
+        android:label="Edit Post">
+        <argument
+            android:name="post"
+            app:argType="com.example.storyhive.data.models.Post" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/commentsFragment"
+        android:name="com.example.storyhive.ui.comment.CommentsFragment"
+        android:label="Comments">
+        <argument
+            android:name="postId"
+            app:argType="string" />
+        <argument
+            android:name="postTitle"
+            app:argType="string" />
+    </fragment>
+
+</navigation>
