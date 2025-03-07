@@ -15,15 +15,20 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+<<<<<<< HEAD
 import com.example.storyhive.StoryHiveApplication
 import com.example.storyhive.data.models.Book
 import com.example.storyhive.data.util.Resource
+=======
+import com.example.storyhive.data.models.Book
+>>>>>>> main
 import com.example.storyhive.databinding.FragmentSearchBinding
 import com.example.storyhive.ui.book.BooksAdapter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+<<<<<<< HEAD
 
 class SearchFragment : Fragment() {
     // ViewBinding instance to access UI elements
@@ -41,6 +46,14 @@ class SearchFragment : Fragment() {
      * Called when the fragment's view is created.
      * Inflates the layout using ViewBinding.
      */
+=======
+class SearchFragment : Fragment() {
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: SearchViewModel by viewModels()
+    private lateinit var booksAdapter: BooksAdapter
+
+>>>>>>> main
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,6 +63,7 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
+<<<<<<< HEAD
     /**
      * Called after the view has been created.
      * Initializes UI components and sets up event listeners.
@@ -72,6 +86,28 @@ class SearchFragment : Fragment() {
             findNavController().navigate(action)
         }
 
+=======
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        setupSearchView()
+        observeViewModel()
+    }
+
+    private fun setupRecyclerView() {
+        booksAdapter = BooksAdapter { book ->
+            // ניווט לפרטי הספר כשלוחצים עליו
+//            findNavController().navigate(
+//                SearchFragmentDirections.actionSearchToBookDetail(book.id)
+//            )
+
+            val action = SearchFragmentDirections.actionSearchToBookDetail(book)
+            findNavController().navigate(action)
+
+        }
+
+
+>>>>>>> main
         binding.searchResultsRecyclerView.apply {
             adapter = booksAdapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -80,12 +116,17 @@ class SearchFragment : Fragment() {
 
     @SuppressLint("ServiceCast")
     private fun setupSearchView() {
+<<<<<<< HEAD
         // Use debounce to prevent unnecessary search requests
+=======
+        // שימוש ב-debounce למניעת בקשות מיותרות
+>>>>>>> main
         var searchJob: Job? = null
 
         binding.searchEditText.addTextChangedListener { text ->
             searchJob?.cancel()
 
+<<<<<<< HEAD
             // Search only if the query contains at least 3 characters
             val query = text?.toString() ?: ""
             if (query.length >= 3) {
@@ -95,17 +136,36 @@ class SearchFragment : Fragment() {
                 }
             } else if (query.isEmpty()) {
                 // Clear search results when input is empty
+=======
+            // חפש רק אם המחרוזת מכילה לפחות 3 תווים
+            val query = text?.toString() ?: ""
+            if (query.length >= 3) {
+                searchJob = lifecycleScope.launch {
+                    delay(500) // המתן 500 מילישניות לפני חיפוש
+                    viewModel.searchBooks(query)
+                }
+            } else if (query.isEmpty()) {
+                // נקה את התוצאות כשהחיפוש ריק
+>>>>>>> main
                 viewModel.searchBooks("")
             }
         }
 
+<<<<<<< HEAD
         // Handle search action when the keyboard's search button is pressed
+=======
+        // הגדר לחיצה על כפתור החיפוש במקלדת
+>>>>>>> main
         binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = binding.searchEditText.text?.toString() ?: ""
                 viewModel.searchBooks(query)
 
+<<<<<<< HEAD
                 // Hide the keyboard
+=======
+                // הסתר את המקלדת
+>>>>>>> main
                 val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(binding.searchEditText.windowToken, 0)
                 return@setOnEditorActionListener true
@@ -115,6 +175,7 @@ class SearchFragment : Fragment() {
     }
 
 
+<<<<<<< HEAD
     /**
      * Observes the ViewModel's search results and updates the UI accordingly.
      */
@@ -144,6 +205,21 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
+=======
+    private fun observeViewModel() {
+        viewModel.searchResults.observe(viewLifecycleOwner) { books ->
+            booksAdapter.submitList(books)
+
+            // עדכון מצב המסך הריק
+            binding.emptyStateContainer.visibility =
+                if (books.isEmpty() && binding.searchEditText.text?.isNotEmpty() == true)
+                    View.VISIBLE else View.GONE
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            // הצג או הסתר מחוון טעינה
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+>>>>>>> main
         }
     }
 

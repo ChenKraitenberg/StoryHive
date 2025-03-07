@@ -1,13 +1,17 @@
 // bookDetailViewModel.kt
 package com.example.storyhive.ui.book
 
+<<<<<<< HEAD
 import android.util.Log
+=======
+>>>>>>> main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.storyhive.data.models.Book
 import com.example.storyhive.data.models.Review
+<<<<<<< HEAD
 import com.example.storyhive.data.util.Resource
 import com.example.storyhive.service.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +44,20 @@ class BookDetailViewModel : ViewModel() {
                 val bookResponse = RetrofitClient.googleBooksService.getBookDetails(bookId)
 
                 // Create a BookDetailsState object with the retrieved data
+=======
+import com.example.storyhive.service.RetrofitClient
+import kotlinx.coroutines.launch
+
+class BookDetailViewModel : ViewModel() {
+    private val _bookDetails = MutableLiveData<BookDetailsState?>()
+    val bookDetails: MutableLiveData<BookDetailsState?> = _bookDetails
+
+    fun loadBookDetails(bookId: String) {
+        viewModelScope.launch {
+            try {
+                val bookResponse = RetrofitClient.googleBooksService.getBookDetails(bookId)
+
+>>>>>>> main
                 val bookDetails = BookDetailsState(
                     id = bookId,
                     title = bookResponse.volumeInfo.title,
@@ -50,6 +68,7 @@ class BookDetailViewModel : ViewModel() {
                     publishedDate = bookResponse.volumeInfo.publishedDate ?: "Unknown"
                 )
 
+<<<<<<< HEAD
                 // Update state to success with retrieved book details
                 _bookDetails.value = Resource.Success(bookDetails)
 
@@ -107,14 +126,22 @@ class BookDetailViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("BookDetailViewModel", "Error loading related books", e)
                 _relatedBooks.value = Resource.Error("Failed to load related books", emptyList())
+=======
+                _bookDetails.value = bookDetails
+            } catch (e: Exception) {
+                _bookDetails.value = null
+>>>>>>> main
             }
         }
     }
 }
 
+<<<<<<< HEAD
 /**
  * Data class representing the state of book details.
  */
+=======
+>>>>>>> main
 data class BookDetailsState(
     val id: String,
     val title: String,

@@ -9,11 +9,14 @@ import com.example.storyhive.repository.PostRepository
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
+<<<<<<< HEAD
 
 /**
  * A dialog fragment that allows users to add a comment to a post.
  * The comment is submitted asynchronously to Firestore via PostRepository.
  */
+=======
+>>>>>>> main
 class CommentDialogFragment : DialogFragment() {
 
     private var _binding: DialogCommentBinding? = null
@@ -41,12 +44,15 @@ class CommentDialogFragment : DialogFragment() {
     companion object {
         private const val ARG_POST_ID = "post_id"
 
+<<<<<<< HEAD
         /**
          * Creates a new instance of the CommentDialogFragment with the specified post ID.
          *
          * @param postId The ID of the post to which the comment will be added.
          * @return A new instance of CommentDialogFragment with the post ID as an argument.
          */
+=======
+>>>>>>> main
         fun newInstance(postId: String) = CommentDialogFragment().apply {
             arguments = Bundle().apply {
                 putString(ARG_POST_ID, postId)

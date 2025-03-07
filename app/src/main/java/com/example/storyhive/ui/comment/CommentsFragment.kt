@@ -17,10 +17,13 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 
+<<<<<<< HEAD
 
 /**
  * Fragment responsible for displaying and managing comments on a specific post.
  */
+=======
+>>>>>>> main
 class CommentsFragment : Fragment() {
     private var _binding: FragmentCommentsBinding? = null
     private val binding get() = _binding!!
@@ -44,21 +47,36 @@ class CommentsFragment : Fragment() {
     }
 
     private fun setupUI() {
+<<<<<<< HEAD
         // Set the post title in the UI
         binding.postTitleText.text = args.postTitle
 
         // Initialize the comments adapter with a delete action
+=======
+        // Set the post title
+        binding.postTitleText.text = args.postTitle
+
+        // Initialize the adapter
+>>>>>>> main
         commentsAdapter = CommentsAdapter(onDeleteClick = { comment ->
             deleteComment(comment.commentId, args.postId)
         })
 
+<<<<<<< HEAD
         // Set up RecyclerView for displaying comments
+=======
+        // Setup RecyclerView
+>>>>>>> main
         binding.commentsRecyclerView.apply {
             adapter = commentsAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
 
+<<<<<<< HEAD
         // Handle the add comment button click event
+=======
+        // Setup add comment button
+>>>>>>> main
         binding.addCommentButton.setOnClickListener {
             val commentText = binding.commentEditText.text.toString().trim()
             if (commentText.isNotEmpty()) {
@@ -68,13 +86,18 @@ class CommentsFragment : Fragment() {
             }
         }
 
+<<<<<<< HEAD
         // Handle the back button click event
+=======
+        // Setup back button
+>>>>>>> main
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
     }
 
     private fun loadComments() {
+<<<<<<< HEAD
         // Ensure binding is not null before accessing views
         _binding?.let { binding ->
             binding.progressBar.visibility = View.VISIBLE
@@ -82,11 +105,25 @@ class CommentsFragment : Fragment() {
             // Observe comments from the repository and update the UI
             repository.observeComments(args.postId) { comments ->
                 // Ensure the fragment is still attached before updating UI
+=======
+        // בדוק שה-binding קיים לפני השימוש
+        _binding?.let { binding ->
+            // הראה סמן התקדמות
+            binding.progressBar.visibility = View.VISIBLE
+
+            // Observe comments from repository
+            repository.observeComments(args.postId) { comments ->
+                // בדוק שה-Fragment עדיין מחובר
+>>>>>>> main
                 if (isAdded && !isDetached) {
                     binding.progressBar.visibility = View.GONE
                     commentsAdapter.updateComments(comments)
 
+<<<<<<< HEAD
                     // Show empty state message if there are no comments
+=======
+                    // הצג הודעת מצב ריק אם אין תגובות
+>>>>>>> main
                     binding.emptyStateText.visibility =
                         if (comments.isEmpty()) View.VISIBLE else View.GONE
                 }
@@ -97,17 +134,28 @@ class CommentsFragment : Fragment() {
     private fun addComment(content: String) {
         lifecycleScope.launch {
             try {
+<<<<<<< HEAD
                 // Show loading state
+=======
+>>>>>>> main
                 binding.progressBar.visibility = View.VISIBLE
                 binding.addCommentButton.isEnabled = false
                 binding.commentEditText.isEnabled = false
 
+<<<<<<< HEAD
                 // Set a timeout to prevent long wait times
                 withTimeout(10000) {
                     repository.addComment(args.postId, content)
                 }
 
                 // Clear input field after a successful comment submission
+=======
+                withTimeout(10000) {
+                repository.addComment(args.postId, content)
+                }
+
+                // Clear input field after successful comment
+>>>>>>> main
                 binding.commentEditText.text.clear()
 
 
@@ -118,7 +166,10 @@ class CommentsFragment : Fragment() {
                 Log.e("CommentDialog", "Error adding comment", e)
                 Toast.makeText(requireContext(), "Failed to add comment: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             } finally {
+<<<<<<< HEAD
                 // Restore UI state after operation completion
+=======
+>>>>>>> main
                 binding.progressBar.visibility = View.GONE
                 binding.addCommentButton.isEnabled = true
                 binding.commentEditText.isEnabled = true

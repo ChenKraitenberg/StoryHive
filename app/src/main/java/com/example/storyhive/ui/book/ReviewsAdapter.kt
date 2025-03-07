@@ -34,6 +34,11 @@ class ReviewsAdapter : ListAdapter<Review, ReviewsAdapter.ReviewViewHolder>(Revi
                 reviewTextView.text = review.content
                 reviewRatingBar.rating = review.rating
 
+<<<<<<< HEAD
+=======
+                // טעינת תמונת המשתמש
+
+>>>>>>> main
             }
         }
     }
