@@ -9,25 +9,20 @@ import androidx.navigation.fragment.findNavController
 import com.example.storyhive.R
 import com.example.storyhive.databinding.FragmentWelcomeBinding
 
-<<<<<<< HEAD
 
 /**
  * **WelcomeFragment** - Displays the welcome screen with navigation options.
  * - Allows users to navigate to sign-in or sign-up screens.
  */
-=======
->>>>>>> main
 class WelcomeFragment : Fragment() {
     private var _binding: FragmentWelcomeBinding? = null
     private val binding get() = _binding!!
 
-<<<<<<< HEAD
+
 
     /**
      * Creates and returns the view hierarchy associated with the fragment.
      */
-=======
->>>>>>> main
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,13 +32,11 @@ class WelcomeFragment : Fragment() {
         return binding.root
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Initializes UI components and sets up event listeners after the view is created.
      */
-=======
->>>>>>> main
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -60,13 +53,11 @@ class WelcomeFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Cleans up resources when the view is destroyed to prevent memory leaks.
      */
-=======
->>>>>>> main
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

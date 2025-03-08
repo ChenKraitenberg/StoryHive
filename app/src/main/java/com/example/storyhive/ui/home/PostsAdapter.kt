@@ -10,13 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-<<<<<<< HEAD
 import com.example.storyhive.R
 import com.example.storyhive.data.local.ImageCacheManager
-=======
-import com.bumptech.glide.Glide
-import com.example.storyhive.R
->>>>>>> main
 import com.example.storyhive.data.models.Post
 import com.example.storyhive.databinding.ItemPostBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -24,7 +19,6 @@ import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-<<<<<<< HEAD
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -41,65 +35,44 @@ class PostsAdapter(
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
 
     // Click listeners for different actions on a post
-=======
-class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCallback()) {
-
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
-
->>>>>>> main
     private var onLikeClickListener: ((Post) -> Unit)? = null
     private var onCommentClickListener: ((Post) -> Unit)? = null
     private var onEditClickListener: ((Post) -> Unit)? = null
     private var onDeleteClickListener: ((Post) -> Unit)? = null
     private var onCommentCountClickListener: ((Post) -> Unit)? = null
 
-<<<<<<< HEAD
     /**
      * Sets a listener for when a post is liked.
      */
-=======
-
->>>>>>> main
     fun setOnLikeClickListener(listener: (Post) -> Unit) {
         onLikeClickListener = listener
     }
 
-<<<<<<< HEAD
     /**
      * Sets a listener for when the comment button is clicked.
      */
-=======
->>>>>>> main
     fun setOnCommentClickListener(listener: (Post) -> Unit) {
         onCommentClickListener = listener
     }
 
-<<<<<<< HEAD
     /**
      * Sets a listener for when the edit button is clicked.
      */
-=======
->>>>>>> main
     fun setOnEditClickListener(listener: (Post) -> Unit) {
         onEditClickListener = listener
     }
 
-<<<<<<< HEAD
     /**
      * Sets a listener for when the delete button is clicked.
      */
-=======
->>>>>>> main
     fun setOnDeleteClickListener(listener: (Post) -> Unit) {
         onDeleteClickListener = listener
     }
 
-<<<<<<< HEAD
+
     /**
      * Sets a listener for when the comment count is clicked.
      */
-=======
->>>>>>> main
     fun setOnCommentCountClickListener(listener: (Post) -> Unit) {
         onCommentCountClickListener = listener
     }
@@ -114,7 +87,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
         return PostViewHolder(binding)
     }
 
-<<<<<<< HEAD
+
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = getItem(position)
         holder.bind(post)
@@ -124,16 +97,6 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
     /**
      * Callback for calculating the difference between old and new post items.
      */
-=======
-
-
-    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-    val post = getItem(position)
-    holder.bind(post)
-    }
-
-
->>>>>>> main
     private class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
         override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
             return oldItem.postId == newItem.postId
@@ -153,36 +116,9 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                 // Display username
                 postAuthor.text = post.userDisplayName
 
-<<<<<<< HEAD
                 // Set user initials for avatar fallback
                 userInitials.text = getInitials(post.userDisplayName)
 
-=======
-                // Display profile image
-                setupProfileImage(post.userDisplayName, post.userProfileImage)
-
-
-                // הצגת תמונת פרופיל
-                if (post.userProfileImage.isNotEmpty()) {
-                    try {
-                        // נסה להמיר את ה-base64 string לbitmap
-                        val bitmap = StorageRepository().decodeBase64ToBitmap(post.userProfileImage)
-                        binding.profileImage.setImageBitmap(bitmap)
-                    } catch (e: Exception) {
-                        Log.e("PostsAdapter", "Failed to decode user profile image", e)
-                        binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
-                    }
-                } else {
-                    binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
-                }
-                Glide.with(itemView.context)
-                    .load(post.userProfileImage)
-                    .placeholder(R.drawable.ic_user_placeholder)
-                    .into(binding.profileImage)
-
-
-                // הצגת שם הספר (כותרת)
->>>>>>> main
                 // --- Book Information ---
                 // Display book title
                 postTitle.text = post.bookTitle
@@ -212,7 +148,6 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                 }
 
                 // --- Book Cover Image ---
-<<<<<<< HEAD
                 if (!post.imageUrl.isNullOrEmpty()) {
                     coroutineScope.launch {
                         val localPath = withContext(Dispatchers.IO) {
@@ -300,37 +235,23 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                     profileImage.visibility = View.GONE
                     userInitials.visibility = View.VISIBLE
                 }
-=======
-                setupBookCoverImage(post)
->>>>>>> main
+
 
                 // --- Interaction Controls ---
                 // Setup like button and count
                 setupLikeButton(post)
 
-<<<<<<< HEAD
                 // Update comment count
                 commentCount.text = post.commentCount.toString()
 
-=======
-                // טיפול בתגובות - עדכון ספירת תגובות
-                commentCount.text = post.commentCount.toString()
-
-
->>>>>>> main
                 // Setup comment button
                 commentButton.setOnClickListener {
                     onCommentClickListener?.invoke(post)
                 }
 
-<<<<<<< HEAD
                 // Setup comment count click listener
                 commentCount.setOnClickListener {
-=======
 
-                //bind listener for click on comments count
-                binding.commentCount.setOnClickListener {
->>>>>>> main
                     try {
                         onCommentCountClickListener?.invoke(post)
                     } catch (e: Exception) {
@@ -338,10 +259,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                     }
                 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
                 // --- User Permissions ---
                 val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
                 val isPostOwner = currentUserId == post.userId
@@ -352,115 +270,15 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
                     onEditClickListener?.invoke(post)
                 }
 
-<<<<<<< HEAD
-=======
-                // Set on edit click listener
-                editButton.setOnClickListener {
-                    onEditClickListener?.invoke(post)
-                }
-                
-
-
-
->>>>>>> main
                 // Show delete button only for post owner
                 deleteButton.visibility = if (isPostOwner) View.VISIBLE else View.GONE
                 deleteButton.setOnClickListener {
                     onDeleteClickListener?.invoke(post)
                 }
-<<<<<<< HEAD
-
 
             }
         }
-=======
-            }
-        }
 
-        private fun getInitials(name: String): String {
-            return name.split(" ")
-                .filter { it.isNotEmpty() }
-                .take(2)
-                .joinToString("") { it.first().uppercase() }
-        }
-
-        // Update the setupProfileImage method
-        private fun setupProfileImage(userName: String, userProfile: String?) {
-            // הגדר תמיד אותיות ראשונות
-            binding.userInitials.text = getInitials(userName)
-
-            // נקה ובדוק תמונה
-            val cleanProfileImage = userProfile?.trim()
-
-            when {
-                // אם יש כתובת URL תקינה
-                !cleanProfileImage.isNullOrEmpty() && cleanProfileImage.startsWith("http") -> {
-                    Glide.with(itemView.context)
-                        .load(cleanProfileImage)
-                        .placeholder(R.drawable.ic_user_placeholder)
-                        .error(R.drawable.ic_user_placeholder)
-                        .into(binding.profileImage)
-                    binding.profileImage.visibility = View.VISIBLE
-                    binding.userInitials.visibility = View.GONE
-                }
-
-                // נסה להמיר Base64
-                !cleanProfileImage.isNullOrEmpty() -> {
-                    val bitmap = StorageRepository().decodeBase64ToBitmap(cleanProfileImage)
-                    if (bitmap != null) {
-                        binding.profileImage.setImageBitmap(bitmap)
-                        binding.profileImage.visibility = View.VISIBLE
-                        binding.userInitials.visibility = View.GONE
-                    } else {
-                        // אם ההמרה נכשלה, הראה אותיות ראשונות
-                        binding.profileImage.visibility = View.GONE
-                        binding.userInitials.visibility = View.VISIBLE
-                    }
-                }
-
-                // אחרת, הראה אותיות ראשונות
-                else -> {
-                    binding.profileImage.visibility = View.GONE
-                    binding.userInitials.visibility = View.VISIBLE
-                }
-            }
-        }
-
-        // Helper method to handle book cover image display
-        private fun setupBookCoverImage(post: Post) {
-            // Check if we have Base64 image data
-            if (!post.imageBase64.isNullOrEmpty()) {
-                try {
-                    // Display Base64 image
-                    val bitmap = StorageRepository().decodeBase64ToBitmap(post.imageBase64!!)
-                    binding.bookCoverImage.setImageBitmap(bitmap)
-                    binding.bookCoverImage.visibility = View.VISIBLE
-                } catch (e: Exception) {
-                    Log.e("PostsAdapter", "Failed to decode post image", e)
-                    checkForImageUrl(post)
-                }
-            } else {
-                // If no Base64 data, check for image URL
-                checkForImageUrl(post)
-            }
-        }
-
-        // Helper method to check for image URL
-        private fun checkForImageUrl(post: Post) {
-            if (!post.imageUrl.isNullOrEmpty()) {
-                // Display image from URL
-                Glide.with(itemView.context)
-                    .load(post.imageUrl)
-                    .placeholder(R.drawable.ic_book_placeholder)
-                    .into(binding.bookCoverImage)
-                binding.bookCoverImage.visibility = View.VISIBLE
-            } else {
-                // No image available
-                binding.bookCoverImage.visibility = View.GONE
-            }
-        }
-
->>>>>>> main
         // Helper method to handle like button setup
         @SuppressLint("SetTextI18n")
         private fun setupLikeButton(post: Post) {
@@ -491,7 +309,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
         }
     }
 
-<<<<<<< HEAD
+
     private fun getInitials(name: String): String {
         return name.split(" ")
             .filter { it.isNotEmpty() }
@@ -499,10 +317,5 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
             .joinToString("") { it.first().uppercase() }
     }
 
-
-
-
 }
-=======
-}
->>>>>>> main
+
