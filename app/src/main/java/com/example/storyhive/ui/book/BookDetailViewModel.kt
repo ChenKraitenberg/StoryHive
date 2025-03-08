@@ -15,9 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-
-
-
 // ViewModel for managing book details and loading related books
 class BookDetailViewModel : ViewModel() {
     // StateFlow to manage the state of book details (Loading, Success, or Error)
