@@ -2,6 +2,7 @@ package com.example.storyhive.repository
 
 import android.net.Uri
 import android.util.Log
+import com.example.storyhive.data.local.ImageCacheManager
 import com.example.storyhive.data.models.Comment
 import com.example.storyhive.data.models.Post
 import com.example.storyhive.data.models.User
@@ -9,6 +10,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object FirebaseRepository {
 
@@ -153,6 +157,38 @@ object FirebaseRepository {
     }
 
     // ---------------------------
+    // User Profile Image Caching
+    // ---------------------------
+    fun syncUserProfileImages(imageCacheManager: ImageCacheManager) {
+        // Get all users from the server
+        val usersCollection = firestore.collection("users")
+        usersCollection.get()
+            .addOnSuccessListener { usersSnapshot ->
+                // For each user, check if they have a profile image
+                for (userDoc in usersSnapshot.documents) {
+                    val photoUrl = userDoc.getString("photoUrl")
+
+                    // If there's a profile image URL, ensure it's cached
+                    if (!photoUrl.isNullOrEmpty()) {
+                        // Using a coroutine scope to call the suspend function
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                imageCacheManager.cacheImage(photoUrl)
+                                Log.d("FirebaseRepository", "Cached profile image: $photoUrl")
+                            } catch (e: Exception) {
+                                Log.e("FirebaseRepository", "Error caching image: $photoUrl", e)
+                            }
+                        }
+                    }
+                }
+                Log.d("FirebaseRepository", "Starting profile images sync")
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirebaseRepository", "Error syncing profile images", e)
+            }
+    }
+
+    // ---------------------------
     // Upload image to Firebase Storage
     // ---------------------------
     fun uploadImageToStorage(uri: Uri, folder: String, onResult: (Boolean, String?) -> Unit) {
@@ -171,6 +207,9 @@ object FirebaseRepository {
     }
 
 
+    // ---------------------------
+    // Comments
+    // ---------------------------
     fun addComment(postId: String, comment: Comment, onResult: (Boolean) -> Unit) {
         try {
             val commentRef = firestore.collection("posts")

@@ -13,8 +13,8 @@ data class Post(
     val bookTitle: String = "",
     val bookAuthor: String = "",
     val bookDescription: String = "",
-    var imageBase64: String? = null, // יכול להיות null
-    var imageUrl: String? = null, // יכול להיות null
+    var imageBase64: String? = null, // could be null
+    var imageUrl: String? = null, // could be null
     var rating: Float = 0.0f,
     val review: String = "",
     val likes: Int = 0,
@@ -24,7 +24,7 @@ data class Post(
 ) : Parcelable
 
 {
-    // הוסף המרה לMap עבור Firestore
+    // conversion to Map for Firestore
     fun toMap(): Map<String, Any?> = mapOf(
         "postId" to postId,
         "userId" to userId,
@@ -42,4 +42,3 @@ data class Post(
         "commentCount" to commentCount
     )
 }
-

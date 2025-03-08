@@ -23,13 +23,23 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.net.URLEncoder
 
+<<<<<<< HEAD
+/**
+ * DialogFragment for editing user profile details such as name, bio, and profile picture.
+ */
+=======
+>>>>>>> main
 class EditProfileDialog : DialogFragment() {
     private var _binding: DialogEditProfileBinding? = null
     private val binding get() = _binding!!
     private val storageRepository = StorageRepository()
     private var selectedImageUri: Uri? = null
 
+<<<<<<< HEAD
+    // Open gallery to select a profile picture
+=======
     // פתיחת גלריה לבחירת תמונה
+>>>>>>> main
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
@@ -48,21 +58,35 @@ class EditProfileDialog : DialogFragment() {
         setupClickListeners()
     }
 
+<<<<<<< HEAD
+    /**
+     * Loads the current user data from Firebase Auth and Firestore.
+     */
+=======
     // טוען את נתוני המשתמש הנוכחי
 // In EditProfileDialog.kt, update the setupCurrentUserData method
+>>>>>>> main
     private fun setupCurrentUserData() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.let { user ->
             binding.displayNameEditText.setText(user.displayName)
 
+<<<<<<< HEAD
+            // Retrieve user bio from Firestore
+=======
             // Get user data from Firestore to fill bio field properly
+>>>>>>> main
             FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(user.uid)
                 .get()
                 .addOnSuccessListener { document ->
                     val bio = document.getString("bio")
+<<<<<<< HEAD
+                    // Ensure the bio field is properly set
+=======
                     // Only set bio text if it's not null or "null" string
+>>>>>>> main
                     if (!bio.isNullOrEmpty() && bio != "null") {
                         binding.bioEditText.setText(bio)
                     } else {
@@ -70,7 +94,11 @@ class EditProfileDialog : DialogFragment() {
                     }
                 }
 
+<<<<<<< HEAD
+            // Load profile image using Picasso
+=======
             // Load profile image
+>>>>>>> main
             Picasso.get()
                 .load(user.photoUrl)
                 .placeholder(R.drawable.baseline_image_24)
@@ -78,7 +106,13 @@ class EditProfileDialog : DialogFragment() {
         }
     }
 
+<<<<<<< HEAD
+    /**
+     * Sets up click listeners for various UI elements.
+     */
+=======
     // מאזינים לכפתורים
+>>>>>>> main
     private fun setupClickListeners() {
         binding.profileImageView.setOnClickListener { getContent.launch("image/*") }
         binding.changePhotoButton.setOnClickListener { getContent.launch("image/*") }
@@ -86,8 +120,14 @@ class EditProfileDialog : DialogFragment() {
         binding.saveButton.setOnClickListener { updateProfile() }
     }
 
+<<<<<<< HEAD
+    /**
+     * Updates the user profile with the new details entered.
+     */
+=======
     // עדכון הפרופיל
 // Update the updateProfile method in EditProfileDialog.kt
+>>>>>>> main
     private fun updateProfile() {
         val newName = binding.displayNameEditText.text.toString()
         val newBio = binding.bioEditText.text.toString() // Ensure this isn't "null" text
@@ -122,8 +162,12 @@ class EditProfileDialog : DialogFragment() {
                         // Store Base64 image in Firestore
                         userUpdates["profileImageBase64"] = imageBase64
 
+<<<<<<< HEAD
+                        // Use a placeholder URL for Firebase Auth profile photo
+=======
                         // DO NOT try to set this as the photoUri in Firebase Auth
                         // Instead, use a placeholder or actual URL for Auth profile photo
+>>>>>>> main
                         val placeholderUrl = "https://ui-avatars.com/api/?name=" +
                                 URLEncoder.encode(newName, "UTF-8") + "&background=random&size=100"
 
@@ -137,7 +181,11 @@ class EditProfileDialog : DialogFragment() {
                     }
                 }
 
+<<<<<<< HEAD
+                // Update Firestore with new data
+=======
                 // Update Firestore
+>>>>>>> main
                 if (userUpdates.isNotEmpty()) {
                     FirebaseFirestore.getInstance()
                         .collection("users")
@@ -170,4 +218,8 @@ class EditProfileDialog : DialogFragment() {
         super.onDestroyView()
         _binding = null
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> main

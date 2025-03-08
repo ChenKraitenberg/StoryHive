@@ -28,6 +28,15 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
+<<<<<<< HEAD
+/**
+ * Sign-up screen for new user registration.
+ * - Allows users to register with email, password, and profile image.
+ * - Provides image selection from the gallery.
+ * - Observes authentication state and navigates to login upon success.
+ */
+=======
+>>>>>>> main
 class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding? = null
     private val binding get() = _binding!!
@@ -35,7 +44,11 @@ class SignUpFragment : Fragment() {
     private var selectedImageUri: Uri? = null
     private val storageRepository = StorageRepository()
 
+<<<<<<< HEAD
+    // Image selection from the gallery
+=======
     // בחירת תמונה מהגלריה
+>>>>>>> main
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -57,6 +70,15 @@ class SignUpFragment : Fragment() {
         return binding.root
     }
 
+<<<<<<< HEAD
+
+    /**
+     * Called after the view is created.
+     * - Sets up event listeners for image selection and registration.
+     * - Observes authentication state changes.
+     */
+=======
+>>>>>>> main
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,13 +87,26 @@ class SignUpFragment : Fragment() {
         observeViewModel()
     }
 
+<<<<<<< HEAD
+    /**
+     * Handles user interaction with the profile image container.
+     * - Opens an image selection dialog.
+     * - Displays an add-photo icon on hover (for desktop use).
+     */
+    private fun setupImageSelection() {
+=======
     private fun setupImageSelection() {
         // כשלוחצים על המיכל של התמונה
+>>>>>>> main
         binding.profileImageContainer.setOnClickListener {
             showImageOptionsDialog()
         }
 
+<<<<<<< HEAD
+        // Show add-photo icon on hover (for desktop usage)
+=======
         // מעבר עכבר (על מחשב) - מראה אייקון הוספה
+>>>>>>> main
         binding.profileImageContainer.setOnHoverListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_HOVER_ENTER -> {
@@ -83,12 +118,24 @@ class SignUpFragment : Fragment() {
             }
             true
         }
+<<<<<<< HEAD
+        // Navigate to login screen
+=======
         // הוספת מאזין לכפתור התחברות
+>>>>>>> main
         binding.loginTextView.setOnClickListener {
             findNavController().navigate(R.id.action_signUpFragment_to_loginFragment)
         }
     }
 
+<<<<<<< HEAD
+    /**
+     * Displays a dialog for selecting a profile picture.
+     * - Allows the user to choose an image from the gallery.
+     * - Provides an option to remove the selected image.
+     */
+=======
+>>>>>>> main
     private fun showImageOptionsDialog() {
         val options = arrayOf("Choose from Gallery", "Remove Photo")
         AlertDialog.Builder(requireContext())
@@ -102,6 +149,16 @@ class SignUpFragment : Fragment() {
             .show()
     }
 
+<<<<<<< HEAD
+
+    /**
+     * Handles user interactions for signing up, including:
+     * - Selecting and updating a profile picture.
+     * - Removing a profile picture if needed.
+     * - Validating user input and initiating the sign-up process.
+     */
+=======
+>>>>>>> main
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "image/*"
@@ -110,6 +167,12 @@ class SignUpFragment : Fragment() {
         imagePickerLauncher.launch(Intent.createChooser(intent, "Select Picture"))
     }
 
+<<<<<<< HEAD
+    /**
+     * Removes the selected profile image and resets the view to a placeholder.
+     */
+=======
+>>>>>>> main
     private fun removeProfileImage() {
         selectedImageUri = null
         binding.profileImage.setImageResource(R.drawable.ic_user_placeholder)
@@ -121,16 +184,38 @@ class SignUpFragment : Fragment() {
         )
     }
 
+<<<<<<< HEAD
+    /**
+     * Updates the profile image preview when a new image is selected.
+     */
+=======
+>>>>>>> main
     private fun updateImagePreview(uri: Uri) {
         binding.profileImage.setImageURI(uri)
         binding.profileImage.setPadding(0, 0, 0, 0) // הסרת הפדינג כשיש תמונה אמיתית
     }
 
+<<<<<<< HEAD
+    /**
+     * Converts DP (density-independent pixels) to PX (pixels) for UI adjustments.
+     */
+=======
+>>>>>>> main
     private fun dpToPx(dp: Int): Int {
         val density = resources.displayMetrics.density
         return (dp * density).toInt()
     }
 
+<<<<<<< HEAD
+
+    /**
+     * Sets up event listeners for UI elements, including:
+     * - Handling the sign-up button click event.
+     * - Validating user input before proceeding.
+     * - Uploading an image before completing the sign-up if an image is selected.
+     */
+=======
+>>>>>>> main
     private fun setupListeners() {
         binding.signUpButton.setOnClickListener {
             val name = binding.nameInput.text.toString().trim()
@@ -142,16 +227,35 @@ class SignUpFragment : Fragment() {
                 binding.signUpButton.isEnabled = false
 
                 if (selectedImageUri != null) {
+<<<<<<< HEAD
+                    // If an image is selected, upload it before signing up
+                    uploadImageAndSignUp(name, email, password)
+                } else {
+                    // Proceed with regular sign-up if no image is selected
+=======
                     // אם נבחרה תמונה, תחילה העלה אותה
                     uploadImageAndSignUp(name, email, password)
                 } else {
                     // אם לא נבחרה תמונה, המשך להרשמה רגילה
+>>>>>>> main
                     viewModel.signUp(email, password, name)
                 }
             }
         }
     }
 
+<<<<<<< HEAD
+
+    /**
+     * Handles user registration along with profile image upload.
+     * - Converts the selected image to Base64 format before uploading.
+     * - Registers the user with Firebase Authentication.
+     * - Stores user details (including Base64 profile image) in Firestore.
+     * - Updates Firebase Authentication profile.
+     * - Navigates to the home screen upon successful registration.
+     */
+=======
+>>>>>>> main
     private fun uploadImageAndSignUp(name: String, email: String, password: String) {
         lifecycleScope.launch {
             try {
@@ -160,7 +264,11 @@ class SignUpFragment : Fragment() {
 
                 Log.d("SignUpFragment", "Starting registration process")
 
+<<<<<<< HEAD
+                // Convert image to Base64 format
+=======
                 // המרת תמונה ל-Base64
+>>>>>>> main
                 var imageBase64: String? = null
                 if (selectedImageUri != null) {
                     try {
@@ -174,7 +282,11 @@ class SignUpFragment : Fragment() {
                             ImageDecoder.decodeBitmap(source)
                         }
 
+<<<<<<< HEAD
+                        // Resize the image before converting to Base64
+=======
                         // הקטן את התמונה לפני המרה ל-Base64
+>>>>>>> main
                         val resizedBitmap = storageRepository.getResizedBitmap(bitmap, 500)
                         imageBase64 = storageRepository.encodeImageToBase64(resizedBitmap)
 
@@ -184,14 +296,22 @@ class SignUpFragment : Fragment() {
                     }
                 }
 
+<<<<<<< HEAD
+                // Register user with Firebase Authentication
+=======
                 // הרשמה למערכת
+>>>>>>> main
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                     .addOnSuccessListener { authResult ->
                         val user = authResult.user
                         Log.d("SignUpFragment", "User created: ${user?.uid}")
 
                         if (user != null) {
+<<<<<<< HEAD
+                            // Save user information in Firestore, including profile image in Base64
+=======
                             // שמירת המשתמש בפיירסטור עם תמונה ב-Base64
+>>>>>>> main
                             val userMap = hashMapOf(
                                 "userId" to user.uid,
                                 "displayName" to name,
@@ -204,7 +324,11 @@ class SignUpFragment : Fragment() {
                                 .addOnSuccessListener {
                                     Log.d("SignUpFragment", "User saved to Firestore")
 
+<<<<<<< HEAD
+                                    // Update user profile in Firebase Authentication
+=======
                                     // עדכון פרופיל המשתמש ב-Auth
+>>>>>>> main
                                     val profileUpdates = UserProfileChangeRequest.Builder()
                                         .setDisplayName(name)
                                         .build()
@@ -213,7 +337,11 @@ class SignUpFragment : Fragment() {
                                         .addOnSuccessListener {
                                             Log.d("SignUpFragment", "Auth profile updated successfully")
 
+<<<<<<< HEAD
+                                            // Navigate to home screen
+=======
                                             // מעבר למסך הבית
+>>>>>>> main
                                             binding.progressBar.visibility = View.GONE
                                             Toast.makeText(requireContext(), "ברוך הבא!", Toast.LENGTH_SHORT).show()
                                             findNavController().navigate(R.id.action_signUp_to_home)
@@ -246,7 +374,15 @@ class SignUpFragment : Fragment() {
     }
 
 
+<<<<<<< HEAD
+    /**
+     * Saves user data to Firestore with success/failure handling.
+     * - Stores user ID, display name, and profile image URL.
+     * - Calls the callback function with `true` if successful, `false` otherwise.
+     */
+=======
     // עדכון שמירת המשתמש בפיירסטור עם שליטה על הצלחה/כישלון
+>>>>>>> main
     private fun saveUserToFirestore(userId: String, displayName: String, profileImageUrl: String?, callback: (Boolean) -> Unit) {
         val userMap = hashMapOf(
             "userId" to userId,
@@ -267,6 +403,16 @@ class SignUpFragment : Fragment() {
             }
     }
 
+<<<<<<< HEAD
+
+    /**
+     * Observes authentication state changes and updates the UI accordingly.
+     * - Handles successful sign-up and updates Firestore.
+     * - Shows errors if sign-up fails.
+     * - Navigates to the home screen upon success.
+     */
+=======
+>>>>>>> main
     private fun observeViewModel() {
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -295,7 +441,10 @@ class SignUpFragment : Fragment() {
                                     Log.e("SignUpFragment", "Failed to update profile", task.exception)
                                 }
 
+<<<<<<< HEAD
+=======
                                 // ניווט למסך הבית
+>>>>>>> main
                                 Toast.makeText(requireContext(), "ברוך הבא!", Toast.LENGTH_SHORT).show()
                                 findNavController().navigate(R.id.action_signUp_to_home)
                             }
@@ -318,6 +467,15 @@ class SignUpFragment : Fragment() {
         }
     }
 
+<<<<<<< HEAD
+    /**
+     * Validates user input for sign-up form.
+     * - Ensures name, email, and password fields are filled.
+     * - Password must be at least 6 characters.
+     * @return `true` if all inputs are valid, `false` otherwise.
+     */
+=======
+>>>>>>> main
     private fun validateInput(name: String, email: String, password: String): Boolean {
         var isValid = true
 
@@ -342,6 +500,12 @@ class SignUpFragment : Fragment() {
         return isValid
     }
 
+<<<<<<< HEAD
+    /**
+     * Cleans up resources when the view is destroyed to prevent memory leaks.
+     */
+=======
+>>>>>>> main
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
