@@ -1,6 +1,13 @@
 package com.example.storyhive.ui.addPost
 
-import StorageRepository
+import com.example.storyhive.StoryHiveApplication
+import com.example.storyhive.data.local.ImageCacheManager
+import com.example.storyhive.data.local.StoryHiveDatabase
+import com.example.storyhive.data.models.Post
+import com.example.storyhive.R
+import com.example.storyhive.databinding.FragmentCreatePostBinding
+import java.io.File
+import android.app.Application
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -11,6 +18,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import android.util.Log
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
@@ -18,24 +29,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
-import com.example.storyhive.R
-import com.example.storyhive.databinding.FragmentCreatePostBinding
-import java.io.File
-import android.Manifest
-import android.content.pm.PackageManager
-import android.util.Log
 import androidx.core.content.ContextCompat
-<<<<<<< HEAD
 import androidx.lifecycle.lifecycleScope
-import com.example.storyhive.StoryHiveApplication
-import com.example.storyhive.data.local.ImageCacheManager
-import com.example.storyhive.data.local.StoryHiveDatabase
-import com.example.storyhive.data.models.Post
+import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import StorageRepository
 
 
 /**
@@ -45,38 +46,26 @@ import kotlinx.coroutines.withContext
  * - Handles image selection from gallery or camera.
  * - Uses ViewModel to manage UI state and update the post in Firebase.
  */
-=======
-import com.example.storyhive.data.models.Post
 
->>>>>>> main
 class EditPostFragment : Fragment() {
     private var _binding: FragmentCreatePostBinding? = null
     private val binding get() = _binding!!
     private val viewModel: EditPostViewModel by viewModels()
     private var selectedImageUri: Uri? = null
     private val args: EditPostFragmentArgs by navArgs()
-<<<<<<< HEAD
     private lateinit var imageCacheManager: ImageCacheManager
 
     /**
      * Handles selecting an image from the gallery.
      * When an image is selected, it updates the UI and ViewModel with the new image URI.
      */
-=======
-
-    // Gallery image selection
->>>>>>> main
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             data?.data?.let { uri ->
-<<<<<<< HEAD
                 // Obtain persistent permission for the URI
-=======
-                // קבל הרשאת קבע על URI
->>>>>>> main
                 requireContext().contentResolver.takePersistableUriPermission(
                     uri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -89,15 +78,12 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Handles capturing an image using the device's camera.
      * Updates the UI and ViewModel with the captured image.
      */
-=======
-    // Camera image capture
->>>>>>> main
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { isSuccess ->
@@ -109,16 +95,12 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
 
     /**
      * Handles requesting storage permissions.
      * If granted, it opens the image selection dialog.
      * If denied, it shows a message informing the user about the requirement.
      */
-=======
-    // Permission request launcher
->>>>>>> main
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -133,13 +115,9 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
-
     /**
      * Inflates the fragment's layout and initializes view binding.
      */
-=======
->>>>>>> main
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -149,7 +127,6 @@ class EditPostFragment : Fragment() {
         return binding.root
     }
 
-<<<<<<< HEAD
 
     /**
      * Called after the view is created.
@@ -160,27 +137,19 @@ class EditPostFragment : Fragment() {
         initImageCacheManager()
         // Set up the view with existing post data
         setupWithExistingPost(args.post)
-=======
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Set up the view with existing post data
-        setupWithExistingPost(args.post)
-
->>>>>>> main
         setupListeners()
         observeViewModel()
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Initializes the ImageCacheManager by retrieving it from the application instance if available.
      * If not found, it creates a new instance using the local database.
      */
     private fun initImageCacheManager() {
-        // Retrieve ImageCacheManager from the application instance if configured
         imageCacheManager = try {
+            // Retrieve ImageCacheManager from the application instance if configured
             (requireActivity().application as StoryHiveApplication).imageCacheManager
         } catch (e: Exception) {
             // If StoryHiveApplication is not available, create a new instance
@@ -190,7 +159,6 @@ class EditPostFragment : Fragment() {
     }
 
 
-
     /**
      * Populates the UI with existing post data for editing.
      * - Fills the input fields with the post's current details.
@@ -198,8 +166,6 @@ class EditPostFragment : Fragment() {
      * - Updates the button text to "Update Post".
      * - Initializes the ViewModel with the existing post.
      */
-=======
->>>>>>> main
     private fun setupWithExistingPost(post: Post) {
         // Fill the form with existing post data
         binding.bookTitleInput.setText(post.bookTitle)
@@ -207,8 +173,7 @@ class EditPostFragment : Fragment() {
         binding.reviewInput.setText(post.review)
         binding.ratingBar.rating = post.rating
 
-<<<<<<< HEAD
-        // If there's an image URL, load the image with caching
+        // If the post has an image URL, load it with caching
         if (!post.imageUrl.isNullOrEmpty()) {
             lifecycleScope.launch {
                 val localPath = withContext(Dispatchers.IO) {
@@ -249,30 +214,6 @@ class EditPostFragment : Fragment() {
      * - Opens the image selection dialog when the image card is clicked.
      * - Checks and requests permissions if needed.
      */
-=======
-        // If there's an image URL, load the image
-        if (!post.imageUrl.isNullOrEmpty()) {
-            Glide.with(requireContext())
-                .load(post.imageUrl)
-                .into(binding.bookImage)
-        } else if (!post.imageBase64.isNullOrEmpty()) {
-            // If there's a base64 image, try to decode and display it
-            try {
-                val bitmap = StorageRepository().decodeBase64ToBitmap(post.imageBase64!!)
-                binding.bookImage.setImageBitmap(bitmap)
-            } catch (e: Exception) {
-                Log.e("EditPostFragment", "Failed to decode image", e)
-            }
-        }
-
-        // Update button text
-        binding.publishButton.text = "Update Post"
-
-        // Initialize the view model with the post
-        viewModel.initWithPost(post)
-    }
-
->>>>>>> main
     private fun setupListeners() {
         binding.imageCard.setOnClickListener {
             // Check and request permissions based on Android version
@@ -296,15 +237,13 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Checks if the app has permission to access storage for selecting images.
      * Uses different permissions based on Android version.
      * @return True if permission is granted, false otherwise.
      */
-=======
->>>>>>> main
     private fun hasStoragePermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
@@ -319,14 +258,12 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Requests storage permission for selecting images.
      * Uses different permissions based on Android version.
      */
-=======
->>>>>>> main
     private fun requestStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissions(
@@ -341,15 +278,13 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Handles the result of permission requests for storage and camera access.
      * If granted, proceeds with image selection or camera capture.
      * If denied, shows a message informing the user about the requirement.
      */
-=======
->>>>>>> main
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -359,11 +294,7 @@ class EditPostFragment : Fragment() {
         if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-<<<<<<< HEAD
                 showImageSourceDialog() // Open image selection dialog
-=======
-                showImageSourceDialog()
->>>>>>> main
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -374,11 +305,8 @@ class EditPostFragment : Fragment() {
         } else if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-<<<<<<< HEAD
                 capturePhoto() // Open camera to take a photo
-=======
-                capturePhoto()
->>>>>>> main
+
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -389,15 +317,11 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
-
     /**
      * Displays a dialog allowing the user to choose an image source:
      * - "Choose from Gallery" opens the device's image gallery.
      * - "Take Photo" checks for camera permission and captures an image.
      */
-=======
->>>>>>> main
     private fun showImageSourceDialog() {
         val options = arrayOf("Choose from Gallery", "Take Photo")
         AlertDialog.Builder(requireContext())
@@ -411,14 +335,11 @@ class EditPostFragment : Fragment() {
             .show()
     }
 
-<<<<<<< HEAD
     /**
      * Checks if the app has camera permission.
      * - If granted, opens the camera to take a photo.
      * - If not, requests camera permission from the user.
      */
-=======
->>>>>>> main
     private fun checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -434,14 +355,11 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
 
     /**
      * Opens the device's image gallery to allow the user to select a picture.
      * Uses an intent to launch the gallery app.
      */
-=======
->>>>>>> main
     private fun openGallery() {
         try {
             val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
@@ -460,15 +378,12 @@ class EditPostFragment : Fragment() {
     }
 
     companion object {
-<<<<<<< HEAD
         // Request codes for storage and camera permissions
-=======
->>>>>>> main
         private const val STORAGE_PERMISSION_REQUEST_CODE = 100
         private const val CAMERA_PERMISSION_REQUEST_CODE = 101
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Captures a photo using the device's camera.
@@ -476,8 +391,6 @@ class EditPostFragment : Fragment() {
      * - Generates a content URI using FileProvider.
      * - Launches the camera app with the generated URI.
      */
-=======
->>>>>>> main
     private fun capturePhoto() {
         val photoFile = File(requireContext().cacheDir, "book_image.jpg")
         val photoUri = FileProvider.getUriForFile(
@@ -489,7 +402,7 @@ class EditPostFragment : Fragment() {
         cameraLauncher.launch(photoUri)
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Validates user input for creating or updating a post.
@@ -497,8 +410,6 @@ class EditPostFragment : Fragment() {
      * - Displays an error message if a field is blank.
      * - Returns true if all inputs are valid, false otherwise.
      */
-=======
->>>>>>> main
     private fun validateInput(title: String, author: String, review: String): Boolean {
         var isValid = true
 
@@ -510,7 +421,7 @@ class EditPostFragment : Fragment() {
             binding.bookTitleLayout.error = null
         }
 
-        // Validate author
+        // Validate author name
         if (author.isBlank()) {
             binding.authorLayout.error = "Please enter author name"
             isValid = false
@@ -518,7 +429,7 @@ class EditPostFragment : Fragment() {
             binding.authorLayout.error = null
         }
 
-        // Validate review
+        // Validate review content
         if (review.isBlank()) {
             binding.reviewLayout.error = "Please write your review"
             isValid = false
@@ -529,7 +440,7 @@ class EditPostFragment : Fragment() {
         return isValid
     }
 
-<<<<<<< HEAD
+
 
     /**
      * Observes changes in the ViewModel's UI state and updates the UI accordingly:
@@ -538,8 +449,6 @@ class EditPostFragment : Fragment() {
      * - Shows an error message if the update fails.
      * - Resets UI elements to their initial state when required.
      */
-=======
->>>>>>> main
     private fun observeViewModel() {
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -547,22 +456,15 @@ class EditPostFragment : Fragment() {
                     binding.progressBar.isVisible = true
                     binding.publishButton.isEnabled = false
                 }
-
                 is EditPostUiState.Success -> {
                     Toast.makeText(context, "Post updated successfully!", Toast.LENGTH_SHORT).show()
-<<<<<<< HEAD
-                    findNavController().navigateUp() // Navigate back after successful update
-=======
                     findNavController().navigateUp()
->>>>>>> main
                 }
-
                 is EditPostUiState.Error -> {
                     binding.progressBar.isVisible = false
                     binding.publishButton.isEnabled = true
                     Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                 }
-
                 is EditPostUiState.Initial -> {
                     binding.progressBar.isVisible = false
                     binding.publishButton.isEnabled = true
@@ -571,12 +473,11 @@ class EditPostFragment : Fragment() {
         }
     }
 
-<<<<<<< HEAD
+
+
     /**
      * Cleans up view binding when the fragment's view is destroyed to prevent memory leaks.
      */
-=======
->>>>>>> main
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
