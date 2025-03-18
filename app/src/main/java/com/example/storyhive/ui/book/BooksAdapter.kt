@@ -112,8 +112,8 @@ class BooksAdapter(
 
                 // Display book genre and rating
                 bookGenre.text = book.genre
-                ratingBar.rating = book.rating
-                bookRating.text = book.rating.toString()
+                //ratingBar.rating = book.rating
+                //bookRating.text = book.rating.toString()
 
                 // Set click listener for the book item
                 root.setOnClickListener { onBookClick(book) }

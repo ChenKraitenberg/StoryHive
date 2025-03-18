@@ -157,10 +157,9 @@ class CreatePostFragment : Fragment() {
             val title = binding.bookTitleInput.text.toString()
             val author = binding.authorInput.text.toString()
             val review = binding.reviewInput.text.toString()
-            val rating = binding.ratingBar.rating
 
             if (validateInput(title, author, review)) {
-                viewModel.createPost(requireContext(), title, author, review, rating)
+                viewModel.createPost(requireContext(), title, author, review, 0.0f)
             }
         }
     }

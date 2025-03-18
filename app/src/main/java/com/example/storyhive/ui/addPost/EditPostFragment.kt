@@ -171,7 +171,6 @@ class EditPostFragment : Fragment() {
         binding.bookTitleInput.setText(post.bookTitle)
         binding.authorInput.setText(post.bookAuthor)
         binding.reviewInput.setText(post.review)
-        binding.ratingBar.rating = post.rating
 
         // If the post has an image URL, load it with caching
         if (!post.imageUrl.isNullOrEmpty()) {
@@ -229,10 +228,9 @@ class EditPostFragment : Fragment() {
             val title = binding.bookTitleInput.text.toString()
             val author = binding.authorInput.text.toString()
             val review = binding.reviewInput.text.toString()
-            val rating = binding.ratingBar.rating
 
             if (validateInput(title, author, review)) {
-                viewModel.updatePost(requireContext(), title, author, review, rating)
+                viewModel.updatePost(requireContext(), title, author, review)
             }
         }
     }
