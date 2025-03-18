@@ -45,4 +45,7 @@ interface PostDao {
 
     @Query("SELECT * FROM posts WHERE bookTitle LIKE '%' || :query || '%' OR bookAuthor LIKE '%' || :query || '%' OR review LIKE '%' || :query || '%'")
     fun searchPosts(query: String): Flow<List<PostEntity>>
+
+    @Query("UPDATE posts SET userDisplayName = :newName WHERE userId = :userId")
+    suspend fun updateUserDisplayName(userId: String, newName: String)
 }

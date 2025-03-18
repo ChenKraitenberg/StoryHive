@@ -140,12 +140,12 @@ class PostsAdapter(
                 }
 
                 // Display review if available
-                if (!post.review.isNullOrEmpty()) {
-                    postReview.text = post.review
-                    postReview.visibility = View.VISIBLE
-                } else {
-                    postReview.visibility = View.GONE
-                }
+//                if (!post.review.isNullOrEmpty()) {
+//                    postReview.text = post.review
+//                    postReview.visibility = View.VISIBLE
+//                } else {
+//                    postReview.visibility = View.GONE
+//                }
 
                 // --- Book Cover Image ---
                 if (!post.imageUrl.isNullOrEmpty()) {

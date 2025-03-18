@@ -3,6 +3,8 @@ package com.example.storyhive.ui.profile
 import StorageRepository
 import android.net.Uri
 import android.os.Bundle
+import android.app.Dialog
+import android.content.res.Resources
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +49,17 @@ class EditProfileDialog : DialogFragment() {
         return binding.root
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.setOnShowListener {
+            val metrics = Resources.getSystem().displayMetrics
+            val width = metrics.widthPixels * 0.9 // 90% מרוחב המסך
+
+            dialog.window?.setLayout(width.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+        return dialog
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupCurrentUserData()
@@ -87,6 +100,31 @@ class EditProfileDialog : DialogFragment() {
         }
     }
 
+    private fun updateUserPostsDisplayName(newName: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        FirebaseFirestore.getInstance()
+            .collection("posts")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val batch = FirebaseFirestore.getInstance().batch()
+
+                for (document in querySnapshot.documents) {
+                    val postRef = document.reference
+                    batch.update(postRef, "userDisplayName", newName)
+                }
+
+                batch.commit()
+                    .addOnSuccessListener {
+                        Log.d("ProfileUpdate", "Successfully updated all user posts")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("ProfileUpdate", "Error updating posts", e)
+                    }
+            }
+    }
+
     /**
      * Sets up click listeners for various UI elements.
      */
@@ -124,6 +162,8 @@ class EditProfileDialog : DialogFragment() {
                     .build()
 
                 FirebaseAuth.getInstance().currentUser?.updateProfile(profileUpdates)?.await()
+
+                updateUserPostsDisplayName(newName)
 
                 // Handle profile image
                 selectedImageUri?.let { uri ->
