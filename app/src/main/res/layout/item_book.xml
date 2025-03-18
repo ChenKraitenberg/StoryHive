@@ -66,42 +66,19 @@
             app:layout_constraintTop_toBottomOf="@id/bookAuthor"
             tools:text="The story follows Harry Potter, a young wizard..."/>
 
-        <RatingBar
-            android:id="@+id/ratingBar"
-            style="?android:attr/ratingBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:progressTint="@color/accent"
-            app:layout_constraintStart_toStartOf="@id/bookTitle"
-            app:layout_constraintTop_toBottomOf="@id/bookDescription"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <TextView
-            android:id="@+id/bookRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:textSize="14sp"
-            android:textColor="@color/text_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/ratingBar"
-            tools:text="4.5"/>
-
         <TextView
             android:id="@+id/bookGenre"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textSize="14sp"
             android:textColor="@color/text_secondary"
-            app:layout_constraintStart_toStartOf="@id/bookTitle"
-            app:layout_constraintEnd_toEndOf="@id/bookTitle"
-            app:layout_constraintTop_toBottomOf="@id/ratingBar"
-            tools:text="Fantasy"/>
-
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/bookDescription"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/bookDescription"
+            app:layout_constraintTop_toBottomOf="@+id/bookDescription"
+            tools:text="Fantasy" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

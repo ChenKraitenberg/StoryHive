@@ -89,7 +89,7 @@ class CreatePostViewModel(application: Application) : AndroidViewModel(applicati
                     bookAuthor = author,
                     review = review,
                     imageBase64 = imageBase64,  // Set the image data directly
-                    rating = rating,
+                    rating = 0.0f,
                     likes = 0,
                     timestamp = System.currentTimeMillis()
                 )

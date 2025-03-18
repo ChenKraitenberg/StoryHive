@@ -64,7 +64,7 @@ class EditPostViewModel(application: Application) : AndroidViewModel(application
      * - Updates the post in Firebase using the repository.
      * - Updates the UI state based on success or failure.
      */
-    fun updatePost(context: Context, title: String, author: String, review: String, rating: Float) {
+    fun updatePost(context: Context, title: String, author: String, review: String, rating:Float = 0.0f) {
         if (!::originalPost.isInitialized) {
             _uiState.value = EditPostUiState.Error("Original post not initialized")
             return
@@ -97,7 +97,6 @@ class EditPostViewModel(application: Application) : AndroidViewModel(application
                     bookTitle = title,
                     bookAuthor = author,
                     review = review,
-                    rating = rating,
                     imageBase64 = imageBase64,
                     imageUrl = imageUrl
                 )
