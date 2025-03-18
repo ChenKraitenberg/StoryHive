@@ -22,6 +22,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -107,6 +109,19 @@ class PostsAdapter(
         }
     }
 
+    private fun formatTimestamp(timestamp: Long): String {
+        val currentTime = System.currentTimeMillis()
+        val diff = currentTime - timestamp
+
+        return when {
+            diff < 60000 -> "Just now" // פחות מדקה
+            diff < 3600000 -> "${diff / 60000} minutes ago" // פחות משעה
+            diff < 86400000 -> "${diff / 3600000} hours ago" // פחות מיום
+            diff < 604800000 -> "${diff / 86400000} days ago" // פחות משבוע
+            else -> SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(timestamp))
+        }
+    }
+
     inner class PostViewHolder(private val binding: ItemPostBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -115,6 +130,9 @@ class PostsAdapter(
                 // --- User Information ---
                 // Display username
                 postAuthor.text = post.userDisplayName
+
+                val formattedTime = formatTimestamp(post.timestamp)
+                binding.postTimestamp.text = formattedTime
 
                 // Set user initials for avatar fallback
                 userInitials.text = getInitials(post.userDisplayName)
@@ -139,13 +157,6 @@ class PostsAdapter(
                     postContent.visibility = View.GONE
                 }
 
-                // Display review if available
-//                if (!post.review.isNullOrEmpty()) {
-//                    postReview.text = post.review
-//                    postReview.visibility = View.VISIBLE
-//                } else {
-//                    postReview.visibility = View.GONE
-//                }
 
                 // --- Book Cover Image ---
                 if (!post.imageUrl.isNullOrEmpty()) {

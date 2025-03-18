@@ -1,7 +1,6 @@
 package com.example.storyhive.repository
 
 import com.example.storyhive.data.models.Book
-import com.example.storyhive.data.models.Review
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
@@ -15,22 +14,14 @@ interface BookRepository {
      * @param query The search term to match book titles.
      * @return A list of books matching the search criteria.
      */
-
     suspend fun searchBooks(query: String): List<Book>
+
     /**
      * Retrieves detailed information about a specific book.
      * @param bookId The unique ID of the book.
      * @return A Book object containing the book details.
      */
-
     suspend fun getBookDetails(bookId: String): Book
-    /**
-     * Fetches reviews for a specific book.
-     * @param bookId The unique ID of the book.
-     * @return A list of Review objects associated with the book.
-     */
-
-//    suspend fun getBookReviews(bookId: String): List<Review>
 }
 
 //Implementation of BookRepository using Firebase Firestore as the data source
@@ -70,18 +61,4 @@ class FirebaseBookRepository : BookRepository {
             .toObject(Book::class.java) ?: throw Exception("Book not found")
     }
 
-    /**
-     * Retrieves reviews for a specific book, sorted by timestamp in descending order.
-     * @param bookId The ID of the book whose reviews are to be retrieved.
-     * @return A list of reviews sorted from newest to oldest.
-     */
-//    override suspend fun getBookReviews(bookId: String): List<Review> {
-//        return booksCollection
-//            .document(bookId)
-//            .collection("reviews")
-//            .orderBy("timestamp", Query.Direction.DESCENDING)
-//            .get()
-//            .await()
-//            .toObjects(Review::class.java)
-//    }
 }

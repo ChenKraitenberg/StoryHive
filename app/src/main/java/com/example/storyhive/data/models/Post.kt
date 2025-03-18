@@ -16,7 +16,6 @@ data class Post(
     var imageBase64: String? = null, // could be null
     var imageUrl: String? = null, // could be null
     var rating: Float = 0.0f,
-    //val review: String = "",
     val likes: Int = 0,
     val likedBy: List<String> = emptyList(),
     val timestamp: Long = System.currentTimeMillis(),
@@ -33,7 +32,6 @@ data class Post(
         "bookTitle" to bookTitle,
         "bookAuthor" to bookAuthor,
         "bookDescription" to bookDescription,
-        //"review" to review,
         "imageBase64" to imageBase64,
         "imageUrl" to imageUrl,
         "timestamp" to timestamp,
