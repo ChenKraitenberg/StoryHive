@@ -30,7 +30,7 @@ interface BookRepository {
      * @return A list of Review objects associated with the book.
      */
 
-    suspend fun getBookReviews(bookId: String): List<Review>
+//    suspend fun getBookReviews(bookId: String): List<Review>
 }
 
 //Implementation of BookRepository using Firebase Firestore as the data source
@@ -75,13 +75,13 @@ class FirebaseBookRepository : BookRepository {
      * @param bookId The ID of the book whose reviews are to be retrieved.
      * @return A list of reviews sorted from newest to oldest.
      */
-    override suspend fun getBookReviews(bookId: String): List<Review> {
-        return booksCollection
-            .document(bookId)
-            .collection("reviews")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .get()
-            .await()
-            .toObjects(Review::class.java)
-    }
+//    override suspend fun getBookReviews(bookId: String): List<Review> {
+//        return booksCollection
+//            .document(bookId)
+//            .collection("reviews")
+//            .orderBy("timestamp", Query.Direction.DESCENDING)
+//            .get()
+//            .await()
+//            .toObjects(Review::class.java)
+//    }
 }

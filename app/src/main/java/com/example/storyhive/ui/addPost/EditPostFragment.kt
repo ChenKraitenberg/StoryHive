@@ -170,7 +170,7 @@ class EditPostFragment : Fragment() {
         // Fill the form with existing post data
         binding.bookTitleInput.setText(post.bookTitle)
         binding.authorInput.setText(post.bookAuthor)
-        binding.reviewInput.setText(post.review)
+        //binding.reviewInput.setText(post.review)
 
         // If the post has an image URL, load it with caching
         if (!post.imageUrl.isNullOrEmpty()) {

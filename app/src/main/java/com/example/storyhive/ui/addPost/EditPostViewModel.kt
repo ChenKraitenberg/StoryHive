@@ -96,7 +96,7 @@ class EditPostViewModel(application: Application) : AndroidViewModel(application
                 val updatedPost = originalPost.copy(
                     bookTitle = title,
                     bookAuthor = author,
-                    review = review,
+                    //review = review,
                     imageBase64 = imageBase64,
                     imageUrl = imageUrl
                 )

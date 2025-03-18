@@ -696,6 +696,16 @@ class PostRepository {
         }
     }
 
+    suspend fun updateUserDisplayNameInLocalPosts(userId: String, newName: String) {
+        if (isOfflineSupported()) {
+            try {
+                postDao!!.updateUserDisplayName(userId, newName)
+            } catch (e: Exception) {
+                Log.e("PostRepository", "Error updating local posts display name", e)
+            }
+        }
+    }
+
     // Synchronize pending data
     suspend fun syncPendingData() {
         if (!isOfflineSupported()) return
@@ -733,6 +743,20 @@ class PostRepository {
                     updateCommentCount(commentEntity.postId)
                 } catch (e: Exception) {
                     Log.e("PostRepository", "Failed to sync comment: ${commentEntity.commentId}", e)
+                }
+
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                if (currentUser != null) {
+                    val userDocument = FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(currentUser.uid)
+                        .get()
+                        .await()
+
+                    val storedDisplayName = userDocument.getString("displayName")
+                    if (storedDisplayName != currentUser.displayName) {
+                        updateUserDisplayNameInLocalPosts(currentUser.uid, currentUser.displayName ?: "")
+                    }
                 }
             }
         } catch (e: Exception) {
