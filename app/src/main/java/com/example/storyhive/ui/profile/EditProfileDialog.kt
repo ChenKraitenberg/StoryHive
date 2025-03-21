@@ -66,6 +66,28 @@ class EditProfileDialog : DialogFragment() {
         setupClickListeners()
     }
 
+    private fun updateUserPostsProfileImage(userId: String, newProfileImage: String) {
+        FirebaseFirestore.getInstance()
+            .collection("posts")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val batch = FirebaseFirestore.getInstance().batch()
+
+                for (document in querySnapshot.documents) {
+                    val postRef = document.reference
+                    batch.update(postRef, "userProfileImage", newProfileImage)
+                }
+
+                batch.commit()
+                    .addOnSuccessListener {
+                        Log.d("ProfileUpdate", "Successfully updated profile image in all posts")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("ProfileUpdate", "Error updating posts' profile images", e)
+                    }
+            }
+    }
 
     /**
      * Loads the current user data from Firebase Auth and Firestore.
@@ -195,6 +217,11 @@ class EditProfileDialog : DialogFragment() {
                         .document(userId)
                         .update(userUpdates)
                         .await()
+                }
+
+                if (userUpdates.containsKey("profileImageBase64")) {
+                    val newProfileImage = userUpdates["profileImageBase64"] as String
+                    updateUserPostsProfileImage(userId, newProfileImage)
                 }
 
                 withContext(Dispatchers.Main) {
