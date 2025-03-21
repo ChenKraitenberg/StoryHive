@@ -87,7 +87,7 @@ class CreatePostViewModel(application: Application) : AndroidViewModel(applicati
                     userProfileImage = userProfileImage,
                     bookTitle = title,
                     bookAuthor = author,
-                    //review = review,
+                    review = review,
                     imageBase64 = imageBase64,  // Set the image data directly
                     rating = 0.0f,
                     likes = 0,

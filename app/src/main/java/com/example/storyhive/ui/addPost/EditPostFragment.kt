@@ -170,9 +170,9 @@ class EditPostFragment : Fragment() {
         // Fill the form with existing post data
         binding.bookTitleInput.setText(post.bookTitle)
         binding.authorInput.setText(post.bookAuthor)
-        //binding.reviewInput.setText(post.review)
+        binding.reviewInput.setText(post.review)
 
-        // If the post has an image URL, load it with caching
+        // First try to load the image URL if it exists
         if (!post.imageUrl.isNullOrEmpty()) {
             lifecycleScope.launch {
                 val localPath = withContext(Dispatchers.IO) {
@@ -198,6 +198,26 @@ class EditPostFragment : Fragment() {
                     }
                 }
             }
+        }
+        // If no URL but Base64 image exists, decode and display it
+        else if (!post.imageBase64.isNullOrEmpty()) {
+            try {
+                Log.d("EditPostFragment", "Loading Base64 image")
+                val bitmap = StorageRepository().decodeBase64ToBitmap(post.imageBase64!!)
+                if (bitmap != null) {
+                    binding.bookImage.setImageBitmap(bitmap)
+                } else {
+                    // Fallback to placeholder if decoding fails
+                    binding.bookImage.setImageResource(R.drawable.ic_book_placeholder)
+                }
+            } catch (e: Exception) {
+                Log.e("EditPostFragment", "Failed to decode Base64 image", e)
+                binding.bookImage.setImageResource(R.drawable.ic_book_placeholder)
+            }
+        }
+        // If no image at all, just show the placeholder
+        else {
+            binding.bookImage.setImageResource(R.drawable.ic_book_placeholder)
         }
 
         // Update button text to indicate updating an existing post

@@ -13,6 +13,7 @@ data class Post(
     val bookTitle: String = "",
     val bookAuthor: String = "",
     val bookDescription: String = "",
+    val review: String = "",
     var imageBase64: String? = null, // could be null
     var imageUrl: String? = null, // could be null
     var rating: Float = 0.0f,
